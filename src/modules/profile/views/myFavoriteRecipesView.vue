@@ -1,5 +1,5 @@
 <template>
-  
+  <h2>Mis recetas favoritas</h2>
 </template>
 
 <script>

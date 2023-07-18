@@ -1,0 +1,16 @@
+@keyframes fade-in-down{
+    0%{
+        transform: translateY(-3rem);
+        opacity: 0;
+    }
+    100%{
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes progress{
+    100%{
+        right: 100%;
+    }
+}

@@ -1,0 +1,21 @@
+@use '../abstracts/variables';
+
+.fa-solid{
+    transition: color ease .3s;
+
+    &--active{
+        color: variables.$color-primary;
+    }
+
+    &--normal{
+        color: variables.$color-grey-500;
+    }
+}
+
+.fa-brands{ color: variables.$color-grey-800; }
+.fa-facebook-f{ color: #1877f2; }
+
+
+.icon-md{
+    font-size: 2rem;
+}

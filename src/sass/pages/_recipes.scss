@@ -1,0 +1,38 @@
+@use '../abstracts/variables';
+@use '../abstracts/mixins';
+
+.recipes-hero{
+    height: 60vh;
+    display: grid;
+    grid-template-areas: "hero";
+    position: relative;
+
+    &::before{
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgb(variables.$color-grey-950, .48);
+        z-index: 1;
+    }
+
+    & > * {
+        grid-area: hero;
+    }
+
+    &__background{
+        width: 100%;
+        height: 60vh;
+        object-fit: cover;
+    }
+
+    &__content{
+        width: min(80rem, 100%);
+        margin-inline: auto;
+        padding-inline: 2rem;
+        display: grid;
+        align-content: center;
+        z-index: 1;
+        gap: 2rem;
+    }   
+}

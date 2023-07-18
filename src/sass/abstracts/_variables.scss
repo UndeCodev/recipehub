@@ -1,0 +1,57 @@
+$fs-fluid-0: clamp(1.28rem, calc(1.18rem + 0.50vw), 1.56rem);
+// $fs-fluid-0: clamp(1.00rem, calc(0.89rem + 0.54vw), 1.31rem);
+$fs-fluid-1: clamp(1.20rem, calc(1.05rem + 0.77vw), 1.64rem);
+$fs-fluid-2: clamp(1.44rem, calc(1.23rem + 1.06vw), 2.05rem);
+$fs-fluid-3: clamp(1.73rem, calc(1.44rem + 1.45vw), 2.56rem);
+
+$fw-700: 700;
+$fw-500: 500;
+$fw-400: 400;
+
+$color-primary: hsl(161, 100%, 33%);
+
+$color-white: hsl(0, 0%, 100%);
+$color-dark: hsl(202, 46%, 15%);
+
+$color-grey-light: hsl(0, 0%, 98%);
+
+$color-grey-100: #f8f9fa; 
+$color-grey-200: #f1f3f5; 
+$color-grey-300: #e9ecef; 
+$color-grey-400: #dee2e6; 
+$color-grey-500: #ced4da; 
+$color-grey-600: #adb5bd; 
+$color-grey-700: #868e96; 
+$color-grey-800: #495057; 
+$color-grey-900: #343a40; 
+$color-grey-950: #212529; 
+
+$color-red-100: #ffe3e3; 
+$color-red-200: #ffc9c9; 
+$color-red-300: #ffa8a8; 
+$color-red-400: #ff8787; 
+$color-red-500: #ff6b6b; 
+$color-red-600: #fa5252; 
+$color-red-700: #f03e3e; 
+$color-red-800: #e03131; 
+$color-red-900: #c92a2a; 
+
+$color-blue-100: #d0ebff; 
+$color-blue-200: #a5d8ff; 
+$color-blue-300: #74c0fc; 
+$color-blue-400: #4dabf7; 
+$color-blue-500: #339af0; 
+$color-blue-600: #228be6; 
+$color-blue-700: #1c7ed6; 
+$color-blue-800: #1971c2; 
+$color-blue-900: #1864ab; 
+
+$color-green-100: #d3f9d8; 
+$color-green-200: #b2f2bb; 
+$color-green-300: #8ce99a; 
+$color-green-400: #69db7c; 
+$color-green-500: #51cf66; 
+$color-green-600: #40c057; 
+$color-green-700: #37b24d; 
+$color-green-800: #2f9e44; 
+$color-green-900: #2b8a3e; 

@@ -1,0 +1,51 @@
+@use '../abstracts/variables';
+
+.btn{
+    padding: 8px;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    background-color: transparent;
+    text-decoration: none;
+
+    // Sizes
+    &--md{ padding: 1rem;}
+
+    // Backgrounds
+    &--primary{
+        background-color: variables.$color-primary;
+        color: variables.$color-white;
+        transition: background-color ease .3s;
+
+        &:hover{
+            background-color: lighten(variables.$color-primary, 2%);
+        }
+    }
+
+    &--secondary{
+        color: variables.$color-grey-800;
+        border: 1px solid variables.$color-grey-500;
+        transition: background-color ease .3s;
+
+        &:hover,
+        &:focus{ background-color: variables.$color-grey-100; }
+    }
+
+    // Stlyes
+    &--icon-group{
+        align-items: center;
+        display: grid;
+        grid-auto-flow: column;
+        justify-content: center;
+        gap: 1rem;
+
+        & > i{
+            line-height: normal;
+        }
+    }
+}
+
+.btn-group{
+    display: grid;
+    gap: 2rem;
+}

@@ -1,0 +1,41 @@
+@use '../abstracts/variables';
+
+.heading-primary,
+.heading-secondary,
+.heading-tertiary{
+    color: variables.$color-grey-800;
+}
+
+.heading-primary{
+    font-size: variables.$fs-fluid-3;    
+}
+
+.heading-secondary{
+    font-size: variables.$fs-fluid-2;    
+}
+
+.heading-tertiary{
+    font-size: variables.$fs-fluid-1;    
+}
+
+.router-link{
+    cursor: pointer;
+    transition: color ease .3s;
+    color: variables.$color-grey-800;
+
+
+    &--active{
+        color: variables.$color-primary;
+        text-decoration: none;
+    }
+
+    &--normal{
+        text-decoration: none;
+        color: rgb(variables.$color-dark, .5);
+        transition: color ease .3s;
+
+        &:hover{
+            color: variables.$color-grey-800;
+        }
+    }
+}

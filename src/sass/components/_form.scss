@@ -1,0 +1,82 @@
+@use '../abstracts/variables';
+
+.form-group{
+    display: grid;
+    gap: 8px;
+
+    &__icon{
+        display: grid;
+        grid-template-areas: "form-input";
+        align-items: center;
+    
+        & > *{
+            grid-area: form-input;
+        }
+
+        & > i.fa-solid{
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;        
+            justify-self: flex-end;
+            padding-inline-end: 3rem;
+            color: variables.$color-grey-700;
+        }
+    }
+
+    &__checkbox{
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-columns: auto 1fr;
+        gap: 1.5rem;
+        align-items: center;
+    }
+}
+
+.form-input{
+    border: none;
+    outline: none;
+    border-radius: 3px;
+    padding: 1rem;
+    transition: border ease .3s;
+    border: 1px solid variables.$color-grey-500;
+    
+    &::placeholder{ color: variables.$color-grey-700; }
+    &:hover{ border: 1px solid variables.$color-grey-700 }
+
+    &:focus { 
+        border: 1px solid variables.$color-grey-800; 
+
+        & + i{ color: variables.$color-grey-800; }
+    }
+
+    // Sizes
+    &--md{ padding: 1.5rem; }
+
+    // States
+    &--error{
+        border-color: variables.$color-red-800 !important;
+
+        &::placeholder{ color: variables.$color-red-800; }
+
+        & + i{ color: variables.$color-red-800 !important; }    
+    }
+}
+
+.form-checkbox{
+    width: 1.8rem;
+    height: 1.8rem;
+}
+
+.form-input-time{
+    width: 6rem;   
+}
+
+.form-textarea{
+    min-height: 10rem;
+    resize: none;
+
+    &::-webkit-scrollbar{
+        width: 0;
+    }
+}
