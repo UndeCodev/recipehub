@@ -25,14 +25,7 @@
                 >
                     <img 
                         :src="profilePicture" 
-                        :alt="username"
                         class="header__profile-picture">
-                    <p class="header__profile-info text-capitalize text-normal">
-                        {{ username }}
-                        <small class="text-lowercase text-regular">
-                            {{ email }}
-                        </small>
-                    </p>
                 </div>
                 <button 
                     type="button"
@@ -98,7 +91,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['username', 'currentState', 'email', 'profilePicture'])
+        ...mapGetters(['currentState', 'profilePicture'])
     }
 }
 </script>

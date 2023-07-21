@@ -17,7 +17,7 @@
 
     &__menu{
         background-color: variables.$color-white;
-        border-radius: 2px;
+        border-radius: 1rem;
         border: 1px solid variables.$color-grey-600;
         opacity: 0;
         position: fixed;
@@ -77,9 +77,8 @@
 
         & > a.router-link{
             align-items: center;
-            column-gap: 1.5rem;
             display: flex;
-            justify-content: space-between;
+            font-weight: variables.$fw-400;
         }
 
         @include mixins.respond(tablet){
@@ -90,11 +89,13 @@
     }
 
     &__auth-group{
+        width: 25rem;
         border-top: 1px solid variables.$color-grey-500;
         display: flex;
         gap: 2rem;
         
         @include mixins.respond(tablet){
+            width: auto;
             border-top: none;
             justify-self: flex-end;
         }
@@ -145,11 +146,6 @@
             border-radius: 3rem;
             object-fit: cover;
             object-position: center;
-        }
-
-        &-info{
-            display: grid;
-            line-height: normal;
         }
 
         &-logout{

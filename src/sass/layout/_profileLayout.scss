@@ -1,0 +1,12 @@
+@use '../abstracts/variables';
+
+.profile-layout{
+    padding: 2rem;
+}
+
+.navbar-profile{
+    display: flex;
+    gap: 4rem;
+    height: 5rem;
+    border-bottom: 2px solid variables.$color-grey-500;
+}

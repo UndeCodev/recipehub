@@ -23,7 +23,6 @@
     transition: color ease .3s;
     color: variables.$color-grey-800;
 
-
     &--active{
         color: variables.$color-primary;
         text-decoration: none;
@@ -36,6 +35,10 @@
 
         &:hover{
             color: variables.$color-grey-800;
+
+            & ~ i{
+                color: red !important;
+            }
         }
     }
 }
