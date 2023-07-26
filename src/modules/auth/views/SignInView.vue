@@ -127,8 +127,8 @@ export default {
         return{
             v$: null,
             showPassword: false,
-            email: 'testeunde@hotmail.com',
-            password: 'Masterv1@',
+            email: null,
+            password: null,
             notification: {
                 type: null,
                 title: null,

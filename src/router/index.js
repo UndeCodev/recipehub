@@ -22,6 +22,18 @@ const routes = [
     ...recipesRouter
   },
   {
+    path: '/receta/:id',
+    name: 'recipe-by-id',
+    meta: {
+        title: 'Receta'       
+    },
+    props: (route) => {
+        const id = Number(route.params.id)
+        return isNaN(id) ? { id: 61 } : { id }
+    },        
+    component: () => import(/* webpackChunkName: "templateRecipe" */ '@/modules/recipes/components/templateRecipe'),
+  },
+  {
     path: '/acerca-de',
     name: 'about',
     meta: {

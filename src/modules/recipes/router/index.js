@@ -7,11 +7,16 @@ export default {
     children: [
         {
             path: '',
+            name: 'recipes-redirect',
+            redirect: { name: 'recipes-home' }
+        },
+        {
+            path: 'inicio',
             name: 'recipes-home',
             meta: {
                 title: 'Recetas'       
             },        
-            component: () => import(/* webpackChunkName: "RecipesLayout" */ '@/modules/recipes/views/RecipesView'),
-        }
+            component: () => import(/* webpackChunkName: "RecipesView" */ '@/modules/recipes/views/RecipesView'),
+        },
     ]
 }

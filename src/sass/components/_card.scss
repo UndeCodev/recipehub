@@ -23,11 +23,11 @@
             linear,
             left bottom,
             left top,
-            color-stop(1, rgba(0,0,0, .20)), /* Top */
+            color-stop(1, rgba(0,0,0, .30)), /* Top */
             color-stop(.6, transparent), /* Center */
             color-stop(.5, transparent), /* Center */
             color-stop(.4, transparent), /* Center */
-            color-stop(0, rgba(0,0,0, .20)) /* Bottom */
+            color-stop(0, rgba(0,0,0, .30)) /* Bottom */
         );
     }
 
@@ -62,7 +62,7 @@
         grid-auto-flow: column;
         justify-content: flex-start;
         align-items: center;
-        gap: 2rem;
+        gap: 1.5rem;
 
         &-picture{
             width: 4rem;
@@ -74,4 +74,38 @@
         }
     }
 
+}
+
+.card-recipe-category{
+    height: 18rem;
+    display: grid;
+    grid-template-areas: "card-recipe";
+    grid-template-rows: 100%;
+    place-items: center;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+    isolation: isolate;
+
+    & > *{
+        grid-area: card-recipe;
+    }    
+
+    & > h2.heading-secondary{
+        z-index: 1;
+    }
+
+    &::before{
+        position: absolute;
+        content: '';
+        inset: 0;
+        background-color: rgb(variables.$color-grey-950, .35);
+    }
+
+    &__image{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
 }

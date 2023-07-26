@@ -3,55 +3,105 @@
     <img 
         src="@/assets/logos/recipehub-icon.svg" 
         alt="RecipeHub Logo" 
-        class="header__logo">
-    <!-- <i class="fa-solid fa-magnifying-glass"></i> -->
+        class="header__logo cursor-pointer"
+        @click="$router.push({ name: 'home' })">
     <div 
         class="header__menu"
-        :class="{ 'header__menu--active' : showMenu }"
+        :class="{'header__menu--active' : showMenu}"
     >
-        <nav class="header__navbar">
+        <nav 
+            class="header__navbar"
+        >
+            <div 
+                v-if="currentState === 'authenticated' && screenWidth < 768"
+                class="header__profile-info">
+                <img 
+                    :src="user.photoURL" 
+                    alt="Diego"
+                    class="header__profile-picture">
+
+                <h3 class="heading-tertiary text-bold d-grid">
+                    {{ user.name }}
+                    <span class="text-normal">{{ user.email }}</span>
+                </h3>
+            </div>
             <CustomLink
                 v-for="link in links"
                 :key="link.to"
                 :link="link"
             />
+            <div 
+                v-if="currentState === 'authenticated' && screenWidth < 768"
+                class="header__profile-auth-links"
+            >
+                <CustomLink
+                    v-for="link in authLinks"
+                    :key="link.to"
+                    :link="link"
+                />
+            </div>
         </nav>
-        <div class="header__auth-group">
-            <i class="fa-solid fa-magnifying-glass" v-show="false"></i>
-            <template v-if="currentState === 'authenticated'">
-                <div 
-                    class="header__profile cursor-pointer" 
-                    @click="$router.push({ name: 'profile-redirect' })"
+
+        <img 
+            v-if=" currentState === 'authenticated' && screenWidth > 768"
+            :src="user.photoURL" 
+            @click="showMenuAuth = !showMenuAuth"
+            alt="Diego"
+            class="header__profile-picture cursor-pointer">
+        
+        
+        <div 
+            v-if=" currentState === 'authenticated' && screenWidth > 768 && showMenuAuth"
+            class="header__profile"
+            :class="{'header__profile--active' : showMenuAuth}"
+        >
+            <div 
+                class="header__profile-info cursor-pointer"
+                @click="$router.push({ name: 'profile-my-recipes' })"
+            >
+                <img 
+                    :src="user.photoURL" 
+                    alt="Diego"
+                    class="header__profile-picture">
+                <h3 class="heading-tertiary text-bold d-grid">
+                    {{ user.name }}
+                    <span class="text-normal">{{ user.email }}</span>
+                </h3>
+            </div>
+            <div 
+                class="header__profile-auth-links"
+            >
+                <CustomLink
+                    v-for="link in authLinks"
+                    :key="link.to"
+                    :link="link"
+                />
+                <RouterLink
+                    class="router-link router-link--normal d-grid"
+                    @click="logout"
+                    :to="{ name: 'home' }"
                 >
-                    <img 
-                        :src="profilePicture" 
-                        class="header__profile-picture">
-                </div>
-                <button 
-                    type="button"
-                    class="btn btn--secondary header__profile-logout"
-                    @click="onLogout"
-                >
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </button>
-            </template>
-            <template v-else>
-                <RouterLink 
-                    class="btn btn--secondary"
-                    :to="{ name: 'auth-sign-up' }"
-                >
-                    Registrarse
+                    <i class="fa-solid fa-arrow-right-from-bracket text-bold"></i> 
+                    <a 
+                        class="router-link router-link--normal"
+                    >
+                        Cerrar sesión
+                    </a>
                 </RouterLink>
-                <RouterLink 
-                    class="btn btn--primary"
-                    :to="{ name: 'auth-sign-in' }"
-                >
-                    Iniciar sesión
-                </RouterLink>
-            </template>
+            </div>
+        </div>
+        
+        <div class="header__auth-buttons" v-if="currentState !== 'authenticated'">
+            <button
+                class="btn btn--primary"
+                @click="$router.push({ name: 'auth-sign-in' })"
+            >
+                Iniciar sesión
+            </button>
         </div>
     </div>
     <button 
+        v-if="screenWidth < 768"
         class="header__icon-menu"
         :class="{ 'header__icon-menu--active' : showMenu }"
         @click="showMenu = !showMenu"
@@ -76,22 +126,40 @@ export default {
     data(){
         return{
             showMenu: false,
+            showMenuAuth: false,
+            screenWidth: null,
             links: [
                 { to: 'home', name: 'Inicio', icon: 'house' },
-                { to: 'recipes', name: 'Recetas', icon: 'utensils' },
+                { to: 'recipes-home', name: 'Recetas', icon: 'utensils' },
                 { to: 'about', name: 'Acerca de', icon: 'message' },
+            ],
+            authLinks: [
+                { to: 'profile-my-recipes', name: 'Mis recetas', icon: 'mug-hot' },
+                { to: 'profile-new-recipe', name: 'Publicar nueva receta', icon: 'circle-plus' },
+                { to: 'profile-favorite-recipes', name: 'Recetas favoritas', icon: 'bookmark' },
+                { to: 'profile-information', name: 'Información personal', icon: 'address-card' },
             ]
         }
     },
+    computed: {
+        ...mapGetters(['currentState', 'user'])
+    },
     methods: {
         ...mapMutations(['logout']),
+        handleResizeWidth(){
+            this.screenWidth = window.innerWidth
+        },
         onLogout(){
             this.logout()
             this.$router.push({ name: 'home' })
         }
     },
-    computed: {
-        ...mapGetters(['currentState', 'profilePicture'])
+    mounted(){
+        this.screenWidth = window.innerWidth
+        window.addEventListener('resize', this.handleResizeWidth)
+    },
+    beforeUnmount(){
+        window.removeEventListener('resize', this.handleResizeWidth)
     }
 }
 </script>

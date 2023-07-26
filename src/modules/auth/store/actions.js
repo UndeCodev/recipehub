@@ -5,11 +5,12 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } fr
 
 const auth = getAuth()
 
-const API_URL = 'http://localhost:3000'
+// const API_URL = 'http://localhost:3000'
+const API_URL = 'https://recipehub-api.onrender.com'
 
-export const signUpUser = async({ commit }, user) => {
+export const signUpUser = async({ commit }, userToRegister) => {
 
-    const { name, lastNames, email, password, file } = user
+    const { name, lastNames, email, password, file } = userToRegister
 
     const formData = new FormData()
     formData.append('name', name)
@@ -30,9 +31,8 @@ export const signUpUser = async({ commit }, user) => {
         }
 
         const { token } = await response.json()
+        const { user } = VuewJwtDecode.decode(token)
 
-        delete user.password
-        delete user.file
         commit('signInUser', { user, token })
         
         return { ok: true }
@@ -59,7 +59,6 @@ export const signInUser = async({ commit }, { email, password }) => {
         const { token } = await response.json()
         const { user } = VuewJwtDecode.decode(token)
 
-        delete user.password
         commit('signInUser', { user, token })
 
         return { ok: true }

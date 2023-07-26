@@ -205,10 +205,10 @@ export default {
   },
   data(){
       return{          
-          name: 'Unde',
-          lastNames: 'Testeo',
-          email: 'testeunde@hotmail.com',
-          password: 'Masterv1@',
+          name: null,
+          lastNames: null,
+          email: null,
+          password: null,
           v$: null,
           showPassword: false,
           localImage: null,
@@ -297,7 +297,7 @@ export default {
   validations(){
     const passwordValidator = helpers.regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{8,}$/)
 
-    const alpha = helpers.regex(/^[a-zA-Z\s]*$/)
+    const alpha = helpers.regex(/^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/)
     
     return{
       name: {

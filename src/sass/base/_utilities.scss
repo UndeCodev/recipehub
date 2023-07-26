@@ -16,12 +16,21 @@
 .align-items-start{ align-items: flex-start; }
 .align-items-center{ align-items: center; }
 
+.align-content-center{ align-content: center; }
+.align-content-start{ align-content: start; }
+
 .justify-content-end{ justify-content: end; }
+.justify-content-center{ justify-content: center; }
 
 // Margins
 .mt-sm{ margin-top: 1rem; }
 .mt-md{ margin-top: 2rem; }
 .mt-lg{ margin-top: 3rem; }
+
+.mx-auto{ margin-inline: auto; }
+.ml-auto{ margin-left: auto; }
+.mr-auto{ margin-right: auto; }
+
 
 .mb-sm{ margin-bottom: 1rem; }
 .mb-md{ margin-bottom: 2rem; }
@@ -70,9 +79,12 @@
 
 .text-error{ color: variables.$color-red-800; }
 
-
-
 .cursor-pointer{ cursor: pointer; }
+
+// Borders
+.border-top{ border-top: 1px solid variables.$color-grey-500; }
+.border-bottom{ border-bottom: 1px solid variables.$color-grey-500; }
+
 
 // Animations
 .fade-in-down{

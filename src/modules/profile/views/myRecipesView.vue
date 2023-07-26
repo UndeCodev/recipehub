@@ -1,69 +1,28 @@
 <template>
-  <section class="my-recipes-layout">
+  <h1 
+    v-if="!recipes"
+    class="heading-primary text-primary d-grid align-content-center text-center"
+    style="height: 20rem;"
+  >
+    Aún no tienes recetas publicadas...
+    <span class="heading-tertiary text-normal">Ve a la sección "publicar nueva receta" y comparte tusconocimientos con la comunidad.</span>
+  </h1>
+  
+  <section 
+    v-else
+    class="my-recipes-layout"
+  >
     <RecipeCard
+      v-for="recipe in recipes"
+      :key="recipe.user_id"
       :recipe="{
-        recipeCover: 'https://ik.imagekit.io/ooasyrel0/pexels-alleksana-5949898-vertical.jpg?updatedAt=1689112159858',
-        title: 'Sopa a la tailandesa de coco y curry',
-        category: 'Desayunos',
-        totalTimePrep: '30 minutos',
-        author: 'Diego Vite Hernández',
-        rolAuthor: 'Publicador',
-        authorPicture: 'https://ik.imagekit.io/ooasyrel0/WhatsApp_Image_2023-07-01_at_12.26.19_R6EkL4XWx.jpg?updatedAt=1689662405998'
-      }"
-    />
-    <RecipeCard
-      :recipe="{
-        recipeCover: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80',
-        title: 'Pastel de chocolate',
-        category: 'Cenas',
-        totalTimePrep: '1 Hora',
-        author: 'Jane Doe',
-        rolAuthor: 'Publicador',
-        authorPicture: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80'
-      }"
-    />
-    <RecipeCard
-      :recipe="{
-        recipeCover: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80',
-        title: 'Pastel de chocolate',
-        category: 'Cenas',
-        totalTimePrep: '1 Hora',
-        author: 'Jane Doe',
-        rolAuthor: 'Publicador',
-        authorPicture: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80'
-      }"
-    />
-    <RecipeCard
-      :recipe="{
-        recipeCover: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-        title: 'Pastel de chocolate',
-        category: 'Cenas',
-        totalTimePrep: '1 Hora',
-        author: 'Jane Doe',
-        rolAuthor: 'Publicador',
-        authorPicture: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80'
-      }"
-    />
-    <RecipeCard
-      :recipe="{
-        recipeCover: 'https://images.unsplash.com/photo-1493770348161-369560ae357d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-        title: 'Pastel de chocolate',
-        category: 'Cenas',
-        totalTimePrep: '1 Hora',
-        author: 'Jane Doe',
-        rolAuthor: 'Publicador',
-        authorPicture: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80'
-      }"
-    />
-    <RecipeCard
-      :recipe="{
-        recipeCover: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-        title: 'Pastel de chocolate',
-        category: 'Cenas',
-        totalTimePrep: '1 Hora',
-        author: 'Jane Doe',
-        rolAuthor: 'Publicador',
-        authorPicture: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80'
+        recipeCover: recipe.recipeCover,
+        title: recipe.title,
+        category: recipe.category,
+        totalTimePrep: recipe.total_time,
+        author: user?.name,
+        rolAuthor: recipe.rol_name,
+        authorPicture: user?.photoURL
       }"
     />
   </section>
@@ -71,9 +30,40 @@
 
 <script>
 import { defineAsyncComponent } from 'vue'
+import { mapState } from 'vuex'
+
 export default {
   components: {
     RecipeCard: defineAsyncComponent(() => import(/* RecipeCard */'@/modules/recipes/components/recipeCard'))
+  },
+  data(){
+    return{
+      user_id: null,
+      recipes: null
+    }
+  },
+  methods: {
+    async getRecipes(){
+      try {
+        const response = await fetch(`https://recipehub-api.onrender.com/recipes-card-by-user/${this.user_id}`)
+        
+        if(!response.ok){
+            const { message } = await response.json()
+            throw new Error(message)
+        }
+
+        this.recipes = await response.json()
+      } catch (error) {
+        if(error.message) this.recipes = null 
+      }
+    }
+  },
+  computed: {
+    ...mapState('auth', ['user'])
+  },
+  created(){
+    this.user_id = this.user.user_id
+    this.getRecipes()
   }
 }
 </script>

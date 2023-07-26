@@ -2,105 +2,172 @@
 @use '../abstracts/mixins';
 
 .header{
-    display: grid;
-    align-items: center;
-    grid-auto-flow: column;
-    justify-content: space-between;
     padding: 1.5rem;
-    box-shadow: 0 0 1px variables.$color-grey-700;
+    background-color: variables.$color-white;
+    border-bottom: 1px solid variables.$color-grey-400;
+    top: 0;
+    position: sticky;
+    z-index: 2;
+
+    display: grid;
+    grid-template-areas: "logo menu";
+    align-items: center;
+    justify-content: space-between;
 
     @include mixins.respond(tablet){
         grid-template-columns: auto 1fr;
     }
 
-    &__logo{ width: 4rem; }
+    &__logo{ 
+        width: 4rem; 
+        grid-area: logo;
+    }
 
     &__menu{
+        min-width: 20rem;
+        grid-area: menu;
         background-color: variables.$color-white;
-        border-radius: 1rem;
-        border: 1px solid variables.$color-grey-600;
-        opacity: 0;
+        border: 1px solid variables.$color-grey-400;
+        border-radius: 8px;
         position: fixed;
-        right: 1.5rem;
-        top: 8rem;
-        transition: transform 200ms cubic-bezier(0.24, 0.22, 0.015, 1.56) 0s, opacity 100ms ease-in-out 0s;
-        z-index: 2;
+        inset: 8rem 1rem auto auto;
+        opacity: 0;
+        transform: translateY(-1rem);
     
+
+        &::before{
+            content: '';
+            position: absolute;
+            width: 2rem;
+            height: 2rem;
+            transform: rotate(45deg) translateY(-1.5rem);
+            right: 2rem;
+            border: 1px solid variables.$color-grey-400;
+            background-color: variables.$color-white;
+            border-bottom: none;
+            border-right: none;
+        }
+
         &--active{
             opacity: 1; 
             transform: translateY(1rem);
         }
 
-        & > * {
-            padding: 2rem;
-        }
-
-        &::before{
-            background-color: variables.$color-white;
-            border: 1px solid variables.$color-grey-600;
-            border-bottom: none;
-            border-right: none;
-            content: '';
-            height: 1.5rem;
-            position: absolute;
-            right: 1rem;
-            top: -8px;
-            transform: rotate(45deg);
-            width: 1.5rem;
-        }
-
         @include mixins.respond(tablet){
+            opacity: 1;
+            transform: none;
+            position: static;
+            min-height: auto;
             border: none;
+
             display: grid;
             grid-auto-flow: column;
             grid-template-columns: 1fr auto;
-            opacity: 1;
-            position: static;
+            align-items: center;
 
-            &::before{
-                display: none;
-            }
-
-            & > * {
-                padding: 0;
-            }
-
-            &--active{
-                transform: translateY(0);
-            }
+            &::before{ display: none; }
         }
     }
-    
+
     &__navbar{
         display: grid;
         gap: 2rem;
+        padding-block: 2rem;
 
         & > a.router-link{
-            align-items: center;
-            display: flex;
-            font-weight: variables.$fw-400;
+            padding-inline: 2rem;
+        }
+
+        & > a.router-link,
+        & > div > a.router-link{
+            display: grid;
+            grid-template-columns: 1.5rem auto;
         }
 
         @include mixins.respond(tablet){
-            gap: 4rem;
             grid-auto-flow: column;
             justify-self: center;
+            border: none;
+            padding: 0;
+
+            & > a.router-link{
+                padding: 0;
+            }
+    
+            & > a.router-link,
+            & > div > a.router-link{
+                display: grid;
+                grid-template-columns: auto auto;
+            }
         }
     }
 
-    &__auth-group{
-        width: 25rem;
-        border-top: 1px solid variables.$color-grey-500;
-        display: flex;
-        gap: 2rem;
-        
+    &__profile{
+        min-width: 25rem;
+        position: fixed;
+        inset: 8rem 2rem auto auto;
+        border: 1px solid variables.$color-grey-400;
+        background-color: variables.$color-white;
+        border-radius: 3px;
+
+        &::before{
+            content: '';
+            position: absolute;
+            width: 2rem;
+            height: 2rem;
+            transform: rotate(45deg) translateY(-1.5rem);
+            right: 2rem;
+            border: 1px solid variables.$color-grey-400;
+            background-color: variables.$color-white;
+            border-bottom: none;
+            border-right: none;
+        }
+
+        &-info{
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            border-bottom: 1px solid variables.$color-grey-400;
+            padding: 2rem;
+        }
+    
+        &-auth-links{
+            display: grid;
+            gap: 2rem;
+            border-top: 1px solid variables.$color-grey-400;
+            padding: 2rem;
+
+            & > a.router-link{
+                display: grid;
+                grid-template-columns: 1.5rem auto;
+            }
+
+            @include mixins.respond(tablet){
+                border-top: none;
+            }
+        }
+
+        &-picture{
+            width: 4rem;
+            height: 4rem;
+            border-radius: 3rem;
+            object-fit: cover;
+            object-position: center;
+        }
+
+    }
+    
+    &__auth-buttons{
+        padding: 2rem;
+        display: grid;
+        border-top: 1px solid variables.$color-grey-400;
+
         @include mixins.respond(tablet){
-            width: auto;
+            padding: 0;
             border-top: none;
-            justify-self: flex-end;
         }
     }
-
+    
     &__icon-menu{
         align-content: center;
         background-color: transparent;
@@ -134,26 +201,5 @@
             display: none;
         }    
     }
-
-    &__profile{
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-
-        &-picture{
-            width: 3.8rem;
-            height: 3.8rem;
-            border-radius: 3rem;
-            object-fit: cover;
-            object-position: center;
-        }
-
-        &-logout{
-            width: 4rem;
-            height: 4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    }
 }
+

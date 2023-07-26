@@ -36,3 +36,43 @@
         gap: 2rem;
     }   
 }
+
+.recipe-categories{
+    max-width: 150rem;
+    margin: 3rem auto;
+    padding: 1.5rem;
+    display: grid;
+
+    &__cards{
+        display: grid;
+        grid-template-columns: repeat(
+            auto-fill,
+            minmax(min(25rem, 100%), 1fr)
+        );
+        gap: 1.5rem;
+    }
+
+    @include mixins.respond(big-desktop){
+        padding: 0;
+    }
+}
+
+.recipes-layout{
+    max-width: 150rem;
+    margin: 3rem auto;
+    columns: 1;
+    gap: 1rem;
+
+    & > * {
+        margin-block-end: 2rem;
+    }
+
+    @include mixins.respond(tablet){
+        columns: 2;
+        column-gap: 2rem;
+    }
+
+    @include mixins.respond(big-desktop){
+        columns: 4;
+    }
+}

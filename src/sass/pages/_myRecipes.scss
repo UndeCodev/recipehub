@@ -1,8 +1,8 @@
-@use '../abstracts/variables';
 @use '../abstracts/mixins';
 
 .my-recipes-layout {
-    margin-block: 2rem;
+    max-width: 120rem;
+    margin-block: 3rem;
     columns: 1;
     gap: 1rem;
 
@@ -16,6 +16,6 @@
     }
 
     @include mixins.respond(big-desktop){
-        columns: 5;
+        columns: 3;
     }
 }

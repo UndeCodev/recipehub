@@ -18,7 +18,10 @@
           </h3>
         </div>
       </div>
-      <div class="card-recipe__footer">
+      <div 
+        v-if="recipe.author"
+        class="card-recipe__footer"
+      >
         <img 
           :src="recipe.authorPicture" 
           alt="People"
