@@ -128,7 +128,7 @@
                     <button 
                         type="button"
                         class="btn btn--primary"
-                        @click="onSelectImage"
+                        @click="$refs.selectorImage.click()"
                     >
                         Seleccionar imagen
                     </button>
@@ -150,7 +150,7 @@
                     <button 
                         type="button"
                         class="btn btn--primary"
-                        @click="onSelectImage"
+                        @click="$refs.selectorImage.click()"
                     >
                         <i class="fa-regular fa-pen-to-square"></i>
                     </button>
@@ -518,7 +518,7 @@ export default {
         },
         async getCategories(){
             try {
-                const response = await fetch('https://recipehub-api.onrender.com/category')
+                const response = await fetch('http://localhost:3000/category')
 
                 if(!response.ok){
                     const { message } = await response.json()
@@ -554,9 +554,6 @@ export default {
           fr.onload = () => this.tempPathCover = fr.result
           fr.readAsDataURL(file)
         },
-        onSelectImage(){
-            this.$refs.selectorImage.click()
-        },
         addIngredient(){
             this.recipe.ingredients.push({
                 placeholder: 'Añáde un ingrediente',
@@ -569,7 +566,7 @@ export default {
         },
         addStep(){
             this.recipe.steps.push({
-                placeholder: 'Añáde otro paso.',
+                placeholder: 'Añade otro paso.',
                 text: null,
             })
         },
@@ -696,7 +693,7 @@ export default {
     computed: {
         ...mapState('auth', ['user'])
     },
-    async created(){
+    created(){
         this.v$ = useVuelidate() 
         this.getCategories()
         this.recipe.user_id = this.user.user_id

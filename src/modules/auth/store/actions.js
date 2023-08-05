@@ -5,8 +5,8 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } fr
 
 const auth = getAuth()
 
-// const API_URL = 'http://localhost:3000'
-const API_URL = 'https://recipehub-api.onrender.com'
+const API_URL = 'http://localhost:3000'
+// const API_URL = 'https://recipehub-api.onrender.com'
 
 export const signUpUser = async({ commit }, userToRegister) => {
 
@@ -48,7 +48,7 @@ export const signInUser = async({ commit }, { email, password }) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({email, password})
+            body: JSON.stringify({ email, password })
         })
 
         if(!response.ok){

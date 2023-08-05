@@ -35,7 +35,7 @@ export default {
     methods: {
         async getRecipes(){
             try {
-                const response = await fetch(`https://recipehub-api.onrender.com/recipes-cards`)
+                const response = await fetch(`http://localhost:3000/recipes-cards`)
                 
                 if(!response.ok){
                     const { message } = await response.json()

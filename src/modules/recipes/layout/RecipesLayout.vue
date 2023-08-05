@@ -88,7 +88,7 @@ export default {
     methods: {
         async getCategories(){
             try {
-                const response = await fetch('https://recipehub-api.onrender.com/category')
+                const response = await fetch('http://localhost:3000/category')
 
                 if(!response.ok){
                     const { message } = await response.json()

@@ -7,6 +7,7 @@ export const signInUser = (state, { user, token, providerId }) => {
     }
     
     if(providerId){
+
         localStorage.setItem('providerId', providerId)
         state.providerId = providerId
     }
