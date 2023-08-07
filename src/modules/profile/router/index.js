@@ -1,12 +1,9 @@
-import isAuthenticatedGuard from '@/modules/auth/router/auth-guard'
-
 export default {
     name: 'profile-layout',
     meta: {
         title: 'Perfil'
     },
     component: () => import(/* webpackChunkName: "ProfileLayout" */ '@/modules/profile/layout/ProfileLayout'),
-    beforeEnter: [isAuthenticatedGuard],
     children: [
         {
             path: '',

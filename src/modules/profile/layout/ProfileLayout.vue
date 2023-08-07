@@ -2,15 +2,15 @@
     <div class="profile">
         <div class="profile__information">
             <img 
-                :src="user?.photoURL" 
-                alt="Diego Vite Hernández - picture"
+                :src="photoURL" 
+                :alt="`${username} - picture`"
                 class="profile__information-picture">
-            <h2 class="heading-primary text-normal mt-md">{{ user?.name }}</h2>
-            <h3 class="heading-secondary text-regular">{{ user?.rolAuthor }}</h3>
+            <h2 class="heading-primary text-normal mt-md">{{ username }}</h2>
+            <h3 class="heading-secondary text-regular">{{ rol }}</h3>
         </div>
         <nav class="profile__navbar">
             <CustomLink
-                v-for="link in links"
+                v-for="link in authLinks"
                 :key="link.to"
                 :link="link"
             />
@@ -22,26 +22,29 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue'
-import { mapGetters } from 'vuex'
+import { defineAsyncComponent, ref } from 'vue'
+import useAuth from '@/modules/auth/composables/useAuth'
 
 export default {
     components: {
         CustomLink: defineAsyncComponent(() => import(/* CustomLink */'@/components/CustomLink'))
     },
-    data(){
-        return{
-            links: [
-                { to: 'profile-my-recipes', name: 'Mis recetas', icon: 'mug-hot' },
-                { to: 'profile-new-recipe', name: 'Publicar nueva receta', icon: 'circle-plus' },
-                { to: 'profile-favorite-recipes', name: 'Recetas favoritas', icon: 'bookmark' },
-                { to: 'profile-information', name: 'Información personal', icon: 'address-card' },
-            ]
+    setup() {
+        // Composables
+        const { 
+            username, 
+            photoURL, 
+            rol,
+            authLinks
+        } = useAuth()
+
+        return {
+            authLinks,
+            username,
+            photoURL,
+            rol
         }
     },
-    computed: {
-        ...mapGetters('auth', ['user'])
-    }
 }
 </script>
 

@@ -1,26 +1,25 @@
-const API_URL = 'http://localhost:3000'
-// const API_URL = 'https://recipehub-api.onrender.com'
+import recipehubApi from "@/api/recipehubApi"
 
-export const postRecipe = async({ commit }, recipe) => {
+export const createNewRecipe = async({ commit }, recipe) => {
     const { 
-        user_id, videoURL, coverRecipe, description, category,
+        userId, videoURL, fileImage, description, category,
         ingredients: listIngredients, servings, steps: listSteps, times: listTimes,
         title, totalTime, yieldRecipe  
     } = structuredClone(recipe)
 
     const formData = new FormData()
 
-    const ingredients = listIngredients.filter(ingredient => ingredient.text != null).map(({ text }) => ({ ingredient: text }))
+    const ingredients = listIngredients.filter(({ ingredient }) => ingredient != null).map(({ ingredient }) => ({ ingredient }))
 
     const steps = listSteps.filter(step => step.text != null).map((step, index) => ({ step: index + 1, text: step.text }))
 
     const times = listTimes.filter(({ time }) => time > 0).map( ({ time, type, timeUnits }) => ({ type, time: `${time} ${timeUnits}` }) )
 
-    formData.append('user_id', user_id)
+    formData.append('userId', userId)
     formData.append('videoURL', videoURL)
-    formData.append('coverRecipe', coverRecipe)
+    formData.append('fileImage', fileImage)
     formData.append('title', title)
-    formData.append('category_id', category)
+    formData.append('category', category)
     formData.append('description', description)
     formData.append('servings', servings)
     formData.append('totalTime', totalTime)
@@ -30,18 +29,34 @@ export const postRecipe = async({ commit }, recipe) => {
     formData.append('times', JSON.stringify(times))
 
     try{
-        const response = await fetch(`${API_URL}/recipes`, {
-            method: 'POST',
-            body: formData
+        await recipehubApi.post('/recipe', formData , {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
         })
-
-        if(!response.ok){
-            const { message } = await response.json()
-            throw new Error(message)
-        }
 
         return { ok: true }
     }catch(error){
-        return { ok: false, message: error.message }
+        return { ok: false, message: error.response.data.message }
+    }
+}
+
+export const getRecipeCategories = async({ commit }) => {
+    const categories = localStorage.getItem('categories');
+
+    if(categories){
+        commit('setCategories', JSON.parse(categories));
+
+        return { ok: true }
+    }else{
+        try {
+            const { data: categories } = await recipehubApi.get('/category')
+    
+            commit('setCategories', categories)
+    
+            return { ok: true}
+        } catch (error) {
+            return { ok: false, message: error.response.data.message }
+        }
     }
 }

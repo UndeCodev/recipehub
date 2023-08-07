@@ -1,11 +1,11 @@
 <template>
   <h1 
-    v-if="!recipes"
+    v-if="!recipesByAuthor"
     class="heading-primary text-primary d-grid align-content-center text-center"
     style="height: 20rem;"
   >
     Aún no tienes recetas publicadas...
-    <span class="heading-tertiary text-normal">Ve a la sección "publicar nueva receta" y comparte tusconocimientos con la comunidad.</span>
+    <span class="heading-tertiary text-normal">Ve a la sección "publicar nueva receta" y comparte tus conocimientos con la comunidad.</span>
   </h1>
   
   <section 
@@ -13,58 +13,64 @@
     class="my-recipes-layout"
   >
     <RecipeCard
-      v-for="recipe in recipes"
-      :key="recipe.user_id"
+      v-for="recipe in recipesByAuthor"
+      :key="recipe._id"
       :recipe="{
-        recipeCover: recipe.recipeCover,
+        recipeCover: recipe.images.photoURL,
         title: recipe.title,
-        category: recipe.category,
-        totalTimePrep: recipe.total_time,
-        author: user?.name,
-        rolAuthor: recipe.rol_name,
-        authorPicture: user?.photoURL
+        category: recipe.category.category,
+        totalTime: recipe.totalTime,
+        author: recipe.author.name,
+        rolAuthor: recipe.author.rol.name,
+        authorPicture: recipe.author.images.photoURL
       }"
     />
-  </section>
+  </section>  
+
+  <Transition v-if="showNotification">
+    <ToastNotification 
+      :notification="notification"
+    />
+  </Transition>
 </template>
 
 <script>
 import { defineAsyncComponent } from 'vue'
-import { mapState } from 'vuex'
+import useRecipes from '@/modules/recipes/composables/useRecipes';
+import useNotification from '@/modules/shared/composables/useNotification';
 
 export default {
   components: {
-    RecipeCard: defineAsyncComponent(() => import(/* RecipeCard */'@/modules/recipes/components/recipeCard'))
+    RecipeCard: defineAsyncComponent(() => import(/* RecipeCard */'@/modules/recipes/components/recipeCard')),
+    ToastNotification: defineAsyncComponent(() => import(/* ToastNotification */ '@/modules/shared/components/ToastNotification'))
   },
-  data(){
-    return{
-      user_id: null,
-      recipes: null
-    }
-  },
-  methods: {
-    async getRecipes(){
-      try {
-        const response = await fetch(`https://recipehub-api.onrender.com/recipes-card-by-user/${this.user_id}`)
-        
-        if(!response.ok){
-            const { message } = await response.json()
-            throw new Error(message)
-        }
+  setup() {
+    // Composables
+    const { 
+      showNotification, 
+      notification, 
+      toastNotification 
+    } = useNotification()
+    
+    const { 
+      getRecipesByAuthor,
+      recipesByAuthor
+    } = useRecipes()
 
-        this.recipes = await response.json()
-      } catch (error) {
-        if(error.message) this.recipes = null 
-      }
+    // Methods
+    const onMounted = async() => {
+      const { ok, message } = await getRecipesByAuthor()
+      if(!ok) toastNotification('error', 'Error al cargar las recetas.', message)
+    }
+
+    onMounted()
+
+    return {
+      showNotification,
+      notification,
+      recipesByAuthor
     }
   },
-  computed: {
-    ...mapState('auth', ['user'])
-  },
-  created(){
-    this.user_id = this.user.user_id
-    this.getRecipes()
-  }
 }
 </script>
 

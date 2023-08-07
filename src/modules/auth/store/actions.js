@@ -1,12 +1,10 @@
 import VuewJwtDecode from 'vue-jwt-decode'
+import recipehubApi from '@/api/recipehubApi'
 
 import '@/modules/auth/helpers/firebase.js'
 import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth'
 
 const auth = getAuth()
-
-const API_URL = 'http://localhost:3000'
-// const API_URL = 'https://recipehub-api.onrender.com'
 
 export const signUpUser = async({ commit }, userToRegister) => {
 
@@ -43,31 +41,21 @@ export const signUpUser = async({ commit }, userToRegister) => {
 
 export const signInUser = async({ commit }, { email, password }) => {
     try{
-        const response = await fetch(`${API_URL}/auth/signin`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-        })
-
-        if(!response.ok){
-            const { message } = await response.json()
-            throw new Error(message)
-        }
+        const { data } = await recipehubApi.post('/auth/signin', { email, password });
         
-        const { token } = await response.json()
-        const { user } = VuewJwtDecode.decode(token)
+        const { token } = data;
+        const { user } = VuewJwtDecode.decode(token);
 
-        commit('signInUser', { user, token })
+
+        commit('signInUser', { user, token });
 
         return { ok: true }
     }catch(error){
-        return { ok: false, message: error.message }
+        return { ok: false, message: error.response.data.message }
     }
 }
 
-export const signWithProvider = async({ commit }, providerId ) => {
+export const signInWithProvider = async({ commit }, providerId ) => {
     const providers = {
         facebook: new FacebookAuthProvider(),
         google: new GoogleAuthProvider(),
@@ -79,21 +67,26 @@ export const signWithProvider = async({ commit }, providerId ) => {
         if(!provider) throw('Proveedor no válido o no proporcionado.')
 
         const { user: userProvider } = await signInWithPopup(auth, provider)
-        const { 
+
+        const {
+            uid, 
             displayName: name, 
             email, 
             photoURL, 
-            accessToken: token, 
-            providerId 
         } = userProvider
         
         const user = {
             name,
             email,
-            photoURL
+            images: {
+                photoURL
+            }
         }
 
-        commit('signInUser', { user, token, providerId })
+        const { data } = await recipehubApi.post('/auth/signin-provider', { uid });
+        const { token } = data
+
+        commit('signInUser', { user, token })
 
         return { ok: true }
     }catch(error){
@@ -105,9 +98,52 @@ export const signWithProvider = async({ commit }, providerId ) => {
     }
 }
 
+export const signUpWithProvider = async({ commit }, providerId ) => {
+    const providers = {
+        facebook: new FacebookAuthProvider(),
+        google: new GoogleAuthProvider(),
+    }
+
+    const provider = providers[providerId]
+
+    try{
+        if(!provider) throw('Proveedor no válido o no proporcionado.')
+
+        const { user: userProvider } = await signInWithPopup(auth, provider)
+
+        const { 
+            uid,
+            displayName: name, 
+            email, 
+            photoURL, 
+            providerId 
+        } = userProvider
+        
+        const { data } = await recipehubApi.post('/auth/signup-provider', {
+            uid,
+            name,
+            email,
+            photoURL,
+            providerId
+        }) 
+
+        const { token } = data;
+        const { user } = VuewJwtDecode.decode(token);
+
+        commit('signInUser', { user, token, providerId })
+
+        return { ok: true }
+    }catch(error){
+        if(error.code === 'auth/popup-closed-by-user'){
+            error = `Ventana de ${providerId} cerrada.`
+        }
+        
+        return { ok: false, message: error.response.data.message }
+    }
+}
+
 export const checkAuthentication = async({ commit }) => {
-    const token    = localStorage.getItem('token')
-    const providerId = localStorage.getItem('providerId')
+    const token = localStorage.getItem('token')
     
     if(!token){
         commit('logout')
@@ -115,58 +151,19 @@ export const checkAuthentication = async({ commit }) => {
     }
     
     try{        
-        const response = await fetch(`${API_URL}/user/verify-token`, {
-            method: 'POST',
+        await recipehubApi.get('/auth/verify-token', {
             headers: {
-                'Content-Type': 'application/json',
-                'x-access-token': token,
-            },
-            body: JSON.stringify({ providerId })
-        })
+                'x-access-token': token
+            }
+        });
         
-        if(!response.ok){
-            const { message } = await response.json()
-            throw new Error(message)
-        }
+        const { user } = VuewJwtDecode.decode(token)        
 
-        const data = VuewJwtDecode.decode(token)        
-        let user;
-
-        if(providerId === 'firebase'){
-            const { email, name, picture: photoURL } = data
-            user = { email, name, photoURL }
-        }else{
-            user = data.user
-        }
-
-        commit('signInUser', { user, token, providerId })
+        commit('signInUser', { user, token });
         
         return { ok: true }
     }catch(error){
        commit('logout')
-       return { ok: false, message: error.message } 
-    }
-}
-
-export const saveChangesAccount = async({ commit }, user) => {
-    const { user_id, name, last_names, email, about_me } = user
-    
-    try{
-        const response = await fetch(`${API_URL}/user/update-profile`, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ user_id, name, last_names, email, about_me })
-        })
-
-        if(!response.ok){
-            const { message } = await response.json()
-            throw new Error(message)
-        }
-
-        return { ok: true }
-    }catch(error){
-        return { ok: false, message: error.message }
+       return { ok: false, message: error.response.data.message } 
     }
 }

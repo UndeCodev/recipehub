@@ -3,53 +3,64 @@
         v-if="recipes"
         class="recipes-layout"
     >
-        <RecipeCard
-            v-for="recipe in recipes"
-            class="cursor-pointer"
-            @click="$router.push({ name: 'recipe-by-id', params: { id: recipe.recipe_id } })"
-            :key="recipe.user_id"
-            :recipe="{
-                recipeCover: recipe.recipeCover,
-                title: recipe.title,
-                category: recipe.category,
-                totalTimePrep: recipe.totalTime,
-                author: recipe.author,
-                rolAuthor: recipe.rolAuthor,
-                authorPicture: recipe.authorPicture
-            }"
-        />
+    <RecipeCard
+      v-for="recipe in recipes"
+      :key="recipe._id"
+      :recipe="{
+        recipeCover: recipe.images.photoURL,
+        title: recipe.title,
+        category: recipe.category.category,
+        totalTime: recipe.totalTime,
+        author: recipe.author?.name,
+        rolAuthor: recipe.author?.rol.name,
+        authorPicture: recipe.author?.images.photoURL
+      }"
+    />
     </section>
+    <Transition v-if="showNotification">
+    <ToastNotification 
+      :notification="notification"
+    />
+  </Transition>
 </template>
 
 <script>
 import { defineAsyncComponent } from 'vue'
+import useRecipes from '../composables/useRecipes'
+import useNotification from '@/modules/shared/composables/useNotification'
+
 export default {
     components: {
-        RecipeCard: defineAsyncComponent(() => import(/* RecipeCard */'@/modules/recipes/components/recipeCard'))
+        RecipeCard: defineAsyncComponent(() => import(/* RecipeCard */'@/modules/recipes/components/recipeCard')),
+        ToastNotification: defineAsyncComponent(() => import(/* ToastNotification */'@/modules/shared/components/ToastNotification')),
     },
-    data() { 
-        return { 
-            recipes: null
-        }
-    },  
-    methods: {
-        async getRecipes(){
-            try {
-                const response = await fetch(`http://localhost:3000/recipes-cards`)
-                
-                if(!response.ok){
-                    const { message } = await response.json()
-                    throw new Error(message)
-                }
+    setup() {
+        
+        const { 
+            notification,
+            showNotification,
+            toastNotification
+        } = useNotification()
 
-                this.recipes = await response.json()
-            } catch (error) {
-                if(error.message) this.recipes = null 
-            }
+        const { 
+            getRecipes,
+            recipes 
+        } = useRecipes()
+
+        const onLoadRecipes = async() => {
+            const { ok, message } = await getRecipes()
+
+            if(!ok) toastNotification('error', 'Error al cargar las recetas.', message)
         }
-    },
-    created() {
-        this.getRecipes()
+
+        onLoadRecipes()
+        
+
+        return {
+            recipes,
+            notification,
+            showNotification
+        }
     }
 }
 </script>

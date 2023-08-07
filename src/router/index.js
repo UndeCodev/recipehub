@@ -1,8 +1,10 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import isAuthenticatedGuard from '@/modules/auth/router/auth-guard'
 
 import recipesRouter from '@/modules/recipes/router'
 import authRouter from '@/modules/auth/router'
 import profileRouter from '@/modules/profile/router'
+
 
 const routes = [
   {
@@ -47,6 +49,7 @@ const routes = [
   },
   {
     path: '/perfil',
+    beforeEnter: [ isAuthenticatedGuard ],
     ...profileRouter
   },
 ]

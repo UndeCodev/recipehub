@@ -1,7 +1,7 @@
 <template>
     <form 
         class="new-recipe"
-        @submit.prevent="onSubmitRecipe"
+        @submit.prevent="onSubmit"
     >
         <div class="mb-lg">
             <h1 class="heading-primary text-primary">Añade una nueva receta.</h1>
@@ -14,7 +14,7 @@
                     <label 
                         for="videoURL"
                         class="heading-tertiary text-bold d-grid"
-                        :class="{ 'text-error ': v$.recipe.videoURL.$error }" 
+                        :class="{ 'text-error ': v$.videoURL.$error }" 
                     >
                         Añade aquí la URL de tu vídeo
                         <small class="text-normal">
@@ -25,16 +25,16 @@
                     <input 
                         type="text" 
                         class="form-input" 
-                        :class="{ 'form-input--error': v$.recipe.videoURL.$error }" 
+                        :class="{ 'form-input--error': v$.videoURL.$error }" 
                         placeholder="https://www.youtube.com/watch?v=XEY-7tKkPik"
                         id="videoURL"
                         v-model.trim="recipe.videoURL"
                         @input="formatURL">
                     <p 
-                        :class="{ 'text-error fade-in-down': v$.recipe.videoURL.$error }" 
-                        v-if="v$.recipe.videoURL.$error"
+                        :class="{ 'text-error fade-in-down': v$.videoURL.$error }" 
+                        v-if="v$.videoURL.$error"
                     >
-                        {{ v$.recipe.videoURL.$errors[0].$message }}
+                        {{ v$.videoURL.$errors[0].$message }}
                     </p>
                 </div>
                 <iframe 
@@ -54,22 +54,22 @@
                     <label 
                         for="title"
                         class="heading-tertiary text-bold"
-                        :class="{ 'text-error ': v$.recipe.title.$error }" 
+                        :class="{ 'text-error ': v$.title.$error }" 
                     >
                         Título de la receta
                     </label>
                     <input 
                         type="text" 
                         class="form-input" 
-                        :class="{ 'form-input--error': v$.recipe.title.$error }" 
+                        :class="{ 'form-input--error': v$.title.$error }" 
                         placeholder="Título de la receta"
                         id="title"
                         v-model.trim="recipe.title">
                     <p 
-                        :class="{ 'text-error fade-in-down': v$.recipe.title.$error }" 
-                        v-if="v$.recipe.title.$error"
+                        :class="{ 'text-error fade-in-down': v$.title.$error }" 
+                        v-if="v$.title.$error"
                     >
-                        {{ v$.recipe.title.$errors[0].$message }}
+                        {{ v$.title.$errors[0].$message }}
                     </p>
                 </div>
                 <div class="form-group">
@@ -85,9 +85,9 @@
                         v-model="recipe.category"
                     >
                         <option 
-                            v-for="{ category, category_id } in categories"
-                            :key="category"
-                            :value="category_id"
+                            v-for="{ category, _id } in categories"
+                            :key="_id"
+                            :value="_id"
                         >
                             {{ category }}
                         </option>
@@ -97,64 +97,27 @@
                     <label 
                         for="description"
                         class="heading-tertiary text-bold"
-                        :class="{ 'text-error ': v$.recipe.description.$error }" 
+                        :class="{ 'text-error ': v$.description.$error }" 
                     >
                         Descripción de la receta
                     </label>
                     <textarea 
                         id="description"
                         class="form-input form-textarea"
-                        :class="{ 'form-input--error': v$.recipe.description.$error }" 
+                        :class="{ 'form-input--error': v$.description.$error }" 
                         placeholder="Descripción de la receta"
                         v-model.trim="recipe.description"
                     ></textarea>
                     <p 
-                        :class="{ 'text-error fade-in-down': v$.recipe.description.$error }" 
-                        v-if="v$.recipe.description.$error"
+                        :class="{ 'text-error fade-in-down': v$.description.$error }" 
+                        v-if="v$.description.$error"
                     >
-                        {{ v$.recipe.description.$errors[0].$message }}
+                        {{ v$.description.$errors[0].$message }}
                     </p>
                 </div>
             </div>
-            <div 
-                class="new-recipe__upload"
-                :style="`${!tempPathCover ? 'border: 2px dashed #adb5bd' : ''}`"
-            >
-                <div 
-                    v-show="!tempPathCover" 
-                    class="new-recipe__upload-buttons"
-                >
-                    <i class="fa-solid fa-image"></i>
-                    <button 
-                        type="button"
-                        class="btn btn--primary"
-                        @click="$refs.selectorImage.click()"
-                    >
-                        Seleccionar imagen
-                    </button>
-                    <input 
-                      type="file" 
-                      @change="onSelectedImage"
-                      ref="selectorImage"
-                      v-show="false"
-                      accept="image/png, image/jpeg, image/jpg"
-                    >
-                </div>
-                <div 
-                    v-if="tempPathCover"
-                    class="new-recipe__upload-photo"
-                >
-                    <img 
-                        :src="tempPathCover"
-                        alt="Entry picture">
-                    <button 
-                        type="button"
-                        class="btn btn--primary"
-                        @click="$refs.selectorImage.click()"
-                    >
-                        <i class="fa-regular fa-pen-to-square"></i>
-                    </button>
-                </div>
+            <div class="new-recipe__upload">
+                <SelectImage @on:change="(file) => recipe.fileImage = file"/>
             </div>
         </section>
         <section class="new-recipe-group">
@@ -170,20 +133,20 @@
                 <input 
                     type="text"
                     class="form-input"
-                    :class="{ 'form-input--error': v$.recipe.ingredients.$error }" 
+                    :class="{ 'form-input--error': v$.ingredients.$error }" 
                     :placeholder="ingredient.placeholder"
-                    v-model.trim="ingredient.text"
+                    v-model.trim="ingredient.ingredient"
                     :id="'ingredient-' + index">
                 <i 
                     class="fa-solid fa-trash cursor-pointer"
-                    @click="removeIngredient(index)"
+                    @click="removeElement(recipe.ingredients, index)"
                 ></i>
             </div>
             <p 
-                :class="{ 'text-error fade-in-down': v$.recipe.ingredients.$error }" 
-                v-if="v$.recipe.ingredients.$error"
+                :class="{ 'text-error fade-in-down': v$.ingredients.$error }" 
+                v-if="v$.ingredients.$error"
             >
-                {{ v$.recipe.ingredients.$errors[0].$message }}
+                {{ v$.ingredients.$errors[0].$message }}
             </p>
             <div class="d-flex gap-md mt-sm">
                 <button 
@@ -196,7 +159,7 @@
                 <button 
                     type="button" 
                     class="btn btn--primary btn--md"
-                    @click="addIngredient"
+                    @click="addElement(recipe.ingredients, 'Añáde un nuevo ingrediente.')"
                 >
                     Añadir ingrediente
                 </button>
@@ -215,14 +178,14 @@
                 <div class="form-group">
                     <label 
                         class="heading-tertiary text-bold"
-                        :class="{ 'text-error ': v$.recipe.steps.$error }" 
+                        :class="{ 'text-error ': v$.steps.$error }" 
                         :for="`step-${index + 1}`"
                     >
                         Paso {{ index + 1 }}
                     </label>
                     <textarea
                         class="form-input form-textarea"
-                        :class="{ 'form-input--error': v$.recipe.steps.$error }" 
+                        :class="{ 'form-input--error': v$.steps.$error }" 
                         :placeholder="step.placeholder"
                         v-model.trim="step.text"
                         :id="`step-${index + 1}`"
@@ -230,14 +193,14 @@
                 </div>
                 <i 
                     class="fa-solid fa-trash cursor-pointer"
-                    @click="removeStep(index)"
+                    @click="removeElement(recipe.steps, index)"
                 ></i>
             </div>
             <p 
-                :class="{ 'text-error fade-in-down': v$.recipe.steps.$error }" 
-                v-if="v$.recipe.steps.$error"
+                :class="{ 'text-error fade-in-down': v$.steps.$error }" 
+                v-if="v$.steps.$error"
             >
-                {{ v$.recipe.steps.$errors[0].$message }}
+                {{ v$.steps.$errors[0].$message }}
             </p>
             <div class="d-flex gap-md mt-sm">
                 <button 
@@ -250,7 +213,7 @@
                 <button 
                     type="button" 
                     class="btn btn--primary btn--md"
-                    @click="addStep"
+                    @click="addElement(recipe.steps, 'Añáde un nuevo paso')"
                 >
                     Añadir paso
                 </button>
@@ -261,45 +224,45 @@
                 <label 
                     for="servings"
                     class="heading-tertiary text-bold"
-                    :class="{ 'text-error ': v$.recipe.servings.$error }" 
+                    :class="{ 'text-error ': v$.servings.$error }" 
                 >
                     Raciones
                 </label>
                 <input 
                     type="number" 
                     class="form-input"
-                    :class="{ 'form-input--error': v$.recipe.servings.$error }" 
+                    :class="{ 'form-input--error': v$.servings.$error }" 
                     id="servings"
                     min="1"
                     placeholder="e.g. 8"
                     v-model.trim="recipe.servings">
                 <p 
-                    :class="{ 'text-error fade-in-down': v$.recipe.servings.$error }" 
-                    v-if="v$.recipe.servings.$error"
+                    :class="{ 'text-error fade-in-down': v$.servings.$error }" 
+                    v-if="v$.servings.$error"
                 >
-                    {{ v$.recipe.servings.$errors[0].$message }}
+                    {{ v$.servings.$errors[0].$message }}
                 </p>
             </div>
             <div class="form-group">
                 <label 
                     for="yieldRecipe"
                     class="heading-tertiary text-bold"
-                    :class="{ 'text-error ': v$.recipe.yieldRecipe.$error }" 
+                    :class="{ 'text-error ': v$.yieldRecipe.$error }" 
                 >
                     Rendimiento (opcional)
                 </label>
                 <input 
                     type="text" 
                     class="form-input"
-                    :class="{ 'form-input--error': v$.recipe.yieldRecipe.$error }" 
+                    :class="{ 'form-input--error': v$.yieldRecipe.$error }" 
                     id="yieldRecipe"
                     placeholder="e.g. 1 9-inch cake"
                     v-model.trim="recipe.yieldRecipe">
                 <p 
-                    :class="{ 'text-error fade-in-down': v$.recipe.yieldRecipe.$error }" 
-                    v-if="v$.recipe.yieldRecipe.$error"
+                    :class="{ 'text-error fade-in-down': v$.yieldRecipe.$error }" 
+                    v-if="v$.yieldRecipe.$error"
                 >
-                    {{ v$.recipe.yieldRecipe.$errors[0].$message }}
+                    {{ v$.yieldRecipe.$errors[0].$message }}
                 </p>
             </div>
         </section>
@@ -312,7 +275,7 @@
                 <label 
                     :for="time.type"
                     class="heading-tertiary text-bold"
-                    :class="{ 'text-error ': v$.recipe.totalTime.$error }" 
+                    :class="{ 'text-error ': v$.totalTime.$error }" 
                 >
                     {{ time.title }}
                 </label>
@@ -320,15 +283,15 @@
                     type="number" 
                     :id="time.type"
                     class="form-input form-input-time"
-                    :class="{ 'form-input--error': v$.recipe.totalTime.$error }" 
+                    :class="{ 'form-input--error': v$.totalTime.$error }" 
                     placeholder="0"
                     min="0"
                     v-model="time.time"
-                    @change="calculateTotalTime"
+                    @change="calculateTime()"
                 >
                 <select 
                     class="form-input"
-                    :class="{ 'form-input--error': v$.recipe.totalTime.$error }" 
+                    :class="{ 'form-input--error': v$.totalTime.$error }" 
                     @change="changeUnits($event, index)"
                 >
                     <option value="minutos">minutos</option>
@@ -341,10 +304,10 @@
                 <p>{{ recipe.totalTime }}</p>
             </div>
             <p 
-                :class="{ 'text-error fade-in-down': v$.recipe.totalTime.$error }" 
-                v-if="v$.recipe.totalTime.$error"
+                :class="{ 'text-error fade-in-down': v$.totalTime.$error }" 
+                v-if="v$.totalTime.$error"
             >
-                {{ v$.recipe.totalTime.$errors[0].$message }}
+                {{ v$.totalTime.$errors[0].$message }}
             </p>
         </section>
         <section class="new-recipe-group">
@@ -403,301 +366,86 @@
 
 <script>
 import { useVuelidate } from '@vuelidate/core'
-import { helpers, required, minLength } from '@vuelidate/validators'
+import { defineAsyncComponent, ref } from 'vue'
 
-import { defineAsyncComponent } from 'vue'
-import { mapActions, mapState } from 'vuex'
+import useValidators from '@/modules/shared/composables/useValidators'
+import useNotification from '@/modules/shared/composables/useNotification'
+import useRecipes from '@/modules/recipes/composables/useRecipes'
 
 export default {
     components: {
-      ToastNotification: defineAsyncComponent(() => import(/* ToastNotification */'@/modules/shared/components/ToastNotification'))
+      ToastNotification: defineAsyncComponent(() => import(/* ToastNotification */'@/modules/shared/components/ToastNotification')),
+      SelectImage: defineAsyncComponent(() => import(/* SelectImage */ '@/modules/shared/components/SelectImage')),
     },
-    data(){
-        return{
-            v$: null,
-            recipe: {
-                videoURL: null,
-                coverRecipe: null,
-                title: null,
-                category: null,
-                description: null,
-                ingredients: [
-                    { 
-                        placeholder: '1 taza de harina',
-                        text: null
-                    },
-                    { 
-                        placeholder: '2 cucharadas de azúcar',
-                        text: null
-                    },
-                    { 
-                        placeholder: '1/2 cucharaditas de sal',
-                        text: null
-                    },
-                ],
-                steps: [
-                    { 
-                        placeholder: 'Precalentar el horno a 180°C...',
-                        text: null
-                    },
-                    { 
-                        placeholder: 'Mezclar los ingredientes secos en un tazón grande...',
-                        text: null
-                    },
-                    { 
-                        placeholder: 'Hornear durante 25 minutos o hasta que el pastel esté dorado...',
-                        text: null
-                    },
-                ],
-                servings: null,
-                yieldRecipe: null,
-                times: [
-                    {
-                        title: 'Tiempo de preparación',
-                        type: 'Tiempo de preparación',
-                        time: 0,
-                        timeUnits: 'minutos'
-                    },
-                    {
-                        title: 'Tiempo de cocción (opcional)',
-                        type: 'Tiempo de cocción',
-                        time: 0,
-                        timeUnits: 'minutos'
-                    },
-                ],
-                totalTime: 0
-            },
-            categories: null,
-            isValidURL: false,
-            tempPathCover: null,
-            notification: {
-              type: null,
-              title: null,
-              description: null,
-              show: false
-            },
-            showNotification: false
-        }
-    },
-    methods:{
-        ...mapActions('recipes', ['postRecipe']),
-        async onSubmitRecipe(){
-            const isValidateForm = await this.v$.$validate()
+    setup() {
+        // Composables
+        const { recipeFormRules } = useValidators()
 
-            if(!isValidateForm){
-                this.showNotification  = true
-                this.notification.show = true
-                this.notification.type = 'error'
-                this.notification.title = 'Error al enviar el formulario.'
-                this.notification.description = 'Faltan campos por llenar, verifica que todos estén correctos.'
-
-                return
-            }
-
-            const { ok, message  } = await this.postRecipe(this.recipe)
+        const { 
+            // Reactive states
+            recipe,
+            categories,
             
-            if(!ok){
-              this.showNotification  = true
-              this.notification.show = true
-              this.notification.type = 'error'
-              this.notification.title = 'Error al registrar la receta'
-              this.notification.description = message
+            // Methods
+            getRecipeCategories,
+            createNewRecipe,
+            addElement,
+            removeElement,
+            changeUnits,
+            calculateTime
+        } = useRecipes()
 
-              return
-            }
+        const { 
+            notification,
+            showNotification,
+            toastNotification
+        } = useNotification()
 
-            this.showNotification  = true
-            this.notification.show = true
-            this.notification.type = 'success'
-            this.notification.title = 'Receta registrada correctamente'
-            this.notification.description = 'La receta se registró correctamente, ahora la puedes ver en tu perfil.'
+        // Reactive states
+        const isValidURL = ref(false)
 
-            setTimeout(() => {
-                this.$router.push({ name: 'profile-my-recipes' })
-            }, 5500);
-        },
-        async getCategories(){
-            try {
-                const response = await fetch('http://localhost:3000/category')
+        const v$ = useVuelidate(recipeFormRules, recipe)
 
-                if(!response.ok){
-                    const { message } = await response.json()
-                    throw new Error(message)
-                }
+        // Methods
+        const onLoadCategories = async() => {
+            const { ok, message } = await getRecipeCategories()
 
-                this.categories = await response.json()
-                this.recipe.category = this.categories[0].category_id
-            } catch (error) {
-                this.showNotification  = true
-                this.notification.show = true
-                this.notification.type = 'error'
-                this.notification.title = error.message
-                this.notification.description = 'No se pudieron cargar las categorías de las recetas, intenta de nuevo más tarde.'
+            if(!ok) toastNotification('error', 'Error al cargar las categorías.', message)
+            else recipe.value.category = categories.value[0]._id
+        }
 
-                setTimeout(() => {
-                    this.$router.push({ name: 'recipes' })
-                }, 5500);
-            }
-        },
-        onSelectedImage(event){
-          const file = event.target.files[0]
+        onLoadCategories()
 
-          if(!file){
-              this.tempPathCover = null
-              this.recipe.coverRecipe = null
-              return
-          }
+        const onSubmit = async() => {
+            const isValidForm = await v$.value.$validate()
 
-          this.recipe.coverRecipe = file
-          const fr = new FileReader()
-
-          fr.onload = () => this.tempPathCover = fr.result
-          fr.readAsDataURL(file)
-        },
-        addIngredient(){
-            this.recipe.ingredients.push({
-                placeholder: 'Añáde un ingrediente',
-                text: null,
-            })
-        },
-        removeIngredient(index){
-            if(this.recipe.ingredients.length === 1) return
-            else this.recipe.ingredients.splice(index, 1)
-        },
-        addStep(){
-            this.recipe.steps.push({
-                placeholder: 'Añade otro paso.',
-                text: null,
-            })
-        },
-        removeStep(index){
-            if(this.recipe.steps.length === 1) return
-            else this.recipe.steps.splice(index, 1)
-        },
-        changeUnits(event, index){
-            const unit = event.target.value.trim()
+            if(!isValidForm) return toastNotification('error', 'Error al enviar el formulario', 'Faltan campos por llenar, verifica que todos estén correctos.')
             
-            this.recipe.times[index].timeUnits = unit
-            this.calculateTotalTime()
-        },
-        calculateTotalTime(){
-            const conversion = {
-                minutos: 1,
-                horas: 60,
-                días: 1440
-            };
+            const { ok, message  } = await createNewRecipe()
 
-            let totalTime = 0;
-
-            for (const time of this.recipe.times) {
-                totalTime += time.time * conversion[time.timeUnits]
-            }
-
-            const days = Math.floor(totalTime / conversion.días)
-            const hours = Math.floor((totalTime % conversion.días) / conversion.horas)
-            const minutes = (totalTime % conversion.días) % conversion.horas
-
-            this.recipe.totalTime = this.formatTime(days, hours, minutes) || 0
-        },
-        formatTime(days, hours, minutes){
-           const timeUnits = [
-              { value: days, unit: "días" },
-              { value: hours, unit: "horas" },
-              { value: minutes, unit: "minutos" }
-            ];
-         
-            const nonZeroUnits = timeUnits.filter(({ value }) => value > 0);
-            const formattedUnits = nonZeroUnits.map(({ value, unit }) => `${value} ${unit}`);
-
-            let result = formattedUnits.join(", ");
-
-            const lastCommaIndex = result.lastIndexOf(",");
-
-            if (lastCommaIndex !== -1) {
-              result = result.slice(0, lastCommaIndex) + " y" + result.slice(lastCommaIndex + 1);
-            }
-
-            return result
-        },
-        formatURL(){
-            if(this.recipe.videoURL === null || this.recipe.videoURL === '') return
-            const videoId = this.recipe.videoURL.split('v=')[1] || this.recipe.videoURL.split('/embed/')[1];
-
-            if(!videoId){
-                this.isValidURL = false
-                this.v$.recipe.videoURL.$touch()
-                
-                return
-            }
-            
-            this.isValidURL = true
-            this.recipe.videoURL = `https://www.youtube.com/embed/${videoId}`;
-        }
-    },
-    watch:{
-        showNotification(newValue){
-          if(newValue){
-            setTimeout(() => {
-              this.showNotification = false
-            }, 5500);
-          }
-        }
-    },
-    validations(){
-        const alphaNum = helpers.regex(/^[A-Za-z0-9\s]+$/g)
-        const alpha = helpers.regex(/^[a-zA-ZñáéíóúÁÉÍÓÚ\s]*$/)
-
-        const hasOneIngredient = (ingredients) => ingredients.some(ingredient => ingredient.text !== null && ingredient.text != '')
-        
-        const hasOneStep = (steps) => steps.some(step => step.text != null && step.text != '')
-        const nonZeroTime = (totalTime) => totalTime !== 0 && totalTime !== null
-
-        const isYoutubeUrl = (value) => {
-            if (!value) return true; // optional field
-
-            const urlPattern = /^(https?\:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
-            return urlPattern.test(value);
+            if(!ok) 
+                toastNotification('error', 'Error al enviar el formulario', message)
+            else 
+                toastNotification('success', 'Receta registrada correctamente', 'Ahorapuedes ver la receta publicada en tu perfil.')
         }
 
-        return{
-            recipe: {
-                videoURL: {
-                    isYoutubeUrl: helpers.withMessage('Ingresa una URL de YouTube válida.', isYoutubeUrl),
-                },
-                title: {
-                    required: helpers.withMessage('Este campo es obligatorio', required),
-                    alpha: helpers.withMessage('Solo se permite texto.', alpha),
-                },
-                description: {
-                    required: helpers.withMessage('Este campo es obligatorio', required),
-                    minLength: helpers.withMessage('El texto proporcionado es muy corto.', minLength(30))
-                },
-                servings: {
-                    required: helpers.withMessage('Este campo es obligatorio', required),
-                },
-                yieldRecipe: {
-                    alphaNum: helpers.withMessage('No se permiten carácteres especiales.', alphaNum),
-                },
-                ingredients: {
-                    hasOneIngredient: helpers.withMessage('Añade mínimo 1 ingrediente en la lista de ingredientes.', hasOneIngredient)
-                },
-                steps: {
-                    hasOneStep: helpers.withMessage('Añade mínimo 1 paso en la lista de pasos.', hasOneStep)
-                },
-                totalTime: {
-                    nonZeroTime: helpers.withMessage('Añade mínimo 1 tiempo en la lista de tiempos.', nonZeroTime)
-                },
-            }
+        return { 
+            // Reactive states
+            v$,
+            recipe,
+            notification,
+            showNotification,
+            isValidURL,
+            categories,
+
+            // Methods
+            onSubmit,
+            addElement,
+            removeElement,
+            changeUnits,
+            calculateTime
         }
     },
-    computed: {
-        ...mapState('auth', ['user'])
-    },
-    created(){
-        this.v$ = useVuelidate() 
-        this.getCategories()
-        this.recipe.user_id = this.user.user_id
-    }
 }
 </script>
 

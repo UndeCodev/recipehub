@@ -1,7 +1,7 @@
 <template>
     <form 
         class="form-sign-in"
-        @submit.prevent="onSignIn">
+        @submit.prevent="onSubmit">
         <h1 class="heading-primary text-bold">Bienvenido a RecipeHub.</h1>
         <div class="mt-sm">
             <p>Coloca tus datos para poder iniciar sesión.</p>
@@ -30,7 +30,7 @@
                     :class="{ 'form-input--error': v$.email.$error }" 
                     placeholder="Correo electrónico"
                     id="email"
-                    v-model="email">
+                    v-model="user.email">
                 <i class="fa-solid fa-envelope"></i>
             </div>
             <p 
@@ -55,7 +55,7 @@
                     :class="{ 'form-input--error': v$.password.$error }" 
                     placeholder="Contraseña"
                     id="password"
-                    v-model="password">
+                    v-model="user.password">
                 <i 
                     class="fa-solid cursor-pointer"
                     :class="!showPassword ? 'fa-eye' : 'fa-eye-slash'"
@@ -113,94 +113,68 @@
 </template>
 
 <script>
+import { defineAsyncComponent, ref } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import { required, email, helpers } from '@vuelidate/validators'
+import { useRouter } from 'vue-router';
 
-import { defineAsyncComponent } from 'vue'
-import { mapActions } from 'vuex'
+import useAuth from '@/modules/auth/composables/useAuth';
+import useNotification from '@/modules/shared/composables/useNotification';
+import useValidators from '@/modules/shared/composables/useValidators';
 
 export default {
     components: {
-        ToastNotification: defineAsyncComponent(() => import(/* ToastNotification */'@/modules/shared/components/ToastNotification'))
+        ToastNotification: defineAsyncComponent(() => import(/* ToastNotification */ '@/modules/shared/components/ToastNotification'))
     },
-    data(){
-        return{
-            v$: null,
-            showPassword: false,
-            email: null,
-            password: null,
-            notification: {
-                type: null,
-                title: null,
-                description: null,
-                show: false
-            },
-            showNotification: false
-        }
-    },
-    methods: {
-        ...mapActions('auth', ['signInUser', 'signWithProvider']),
-        async onSignIn(){
-            const result = await this.v$.$validate()
-            if(!result) return
+    setup() {
+        // Composables
+        const router = useRouter()
 
-            const user = {
-                email: this.email,
-                password: this.password
-            }
+        const { 
+            showNotification,
+            notification, 
+            toastNotification 
+        } = useNotification()
 
-            const { ok, message } = await this.signInUser(user) 
-            
-            if(!ok){
-              this.showNotification  = true
-              this.notification.show = true
-              this.notification.type = 'error'
-              this.notification.title = 'Error al iniciar sesión'
-              this.notification.description = message
-            
-              return
-            }
-            
-            this.$router.push({ name: 'profile-redirect' })
-        },
-        async onSignInWithProvider(provider){
-            const { ok, message} = await this.signWithProvider(provider)
+        const { signInRules } = useValidators()
+        const { 
+            signInUser,
+            signInWithProvider,
+        } = useAuth()
+ 
+        // Reactive states
+        const showPassword = ref(false)
 
-            if(!ok){
-              this.showNotification  = true
-              this.notification.show = true
-              this.notification.type = 'error'
-              this.notification.title = 'Error al iniciar sesión.'
-              this.notification.description = message
-            
-              return
-            }
+        const user = ref({
+            email: 'test@test.com',
+            password: 'test123'
+        })
+
+        const v$ = useVuelidate(signInRules, user)
         
-            this.$router.push({ name: 'profile-redirect' })
-        },  
-    },
-    watch:{
-        showNotification(newValue){
-            if(newValue){
-              setTimeout(() => {
-                this.showNotification = false
-              }, 5500);
-            }
-        }
-    },
-    validations(){
-        return{
-            email: {
-                required: helpers.withMessage('Este campo es obligatorio', required),
-                email: helpers.withMessage('Correo electrónico no válido.', email)
+        return {
+            v$,
+            user,
+            showPassword,
+            notification,
+            showNotification,
+
+            // Methods
+            onSubmit: async() => {
+                const isValidForm = await v$.value.$validate()
+                if(!isValidForm) return
+
+                const { ok, message } = await signInUser(user.value)
+
+                if(!ok) toastNotification('error', 'Error al iniciar sesión.', message)
+                else router.push({ name: 'profile-my-recipes' })
             },
-            password: {
-                required: helpers.withMessage('Este campo es obligatorio', required)
+            onSignInWithProvider: async(provider) => {
+                const { ok, message } = await signInWithProvider(provider)
+
+                if(!ok) toastNotification('error', 'Error al iniciar sesión.', message)
+                else router.push({ name: 'profile-redirect' })
             }
         }
-    },
-    created(){
-        this.v$ = useVuelidate() 
     }
 }
 </script>

@@ -13,25 +13,25 @@
             class="header__navbar"
         >
             <div 
-                v-if="currentState === 'authenticated' && screenWidth < 768"
+                v-if="authStatus === 'authenticated' && screenWidth < 768"
                 class="header__profile-info">
                 <img 
-                    :src="user.photoURL" 
-                    alt="Diego"
+                    :src="photoURL" 
+                    :alt="username"
                     class="header__profile-picture">
 
                 <h3 class="heading-tertiary text-bold d-grid">
-                    {{ user.name }}
-                    <span class="text-normal">{{ user.email }}</span>
+                    {{ username }}
+                    <span class="text-normal">{{ email }}</span>
                 </h3>
             </div>
             <CustomLink
-                v-for="link in links"
+                v-for="link in publicLinks"
                 :key="link.to"
                 :link="link"
             />
             <div 
-                v-if="currentState === 'authenticated' && screenWidth < 768"
+                v-if="authStatus === 'authenticated' && screenWidth < 768"
                 class="header__profile-auth-links"
             >
                 <CustomLink
@@ -43,15 +43,13 @@
         </nav>
 
         <img 
-            v-if=" currentState === 'authenticated' && screenWidth > 768"
-            :src="user.photoURL" 
+            v-if=" authStatus === 'authenticated' && screenWidth > 768"
+            :src="photoURL" 
             @click="showMenuAuth = !showMenuAuth"
             alt="Diego"
             class="header__profile-picture cursor-pointer">
-        
-        
         <div 
-            v-if=" currentState === 'authenticated' && screenWidth > 768 && showMenuAuth"
+            v-if=" authStatus === 'authenticated' && screenWidth > 768 && showMenuAuth"
             class="header__profile"
             :class="{'header__profile--active' : showMenuAuth}"
         >
@@ -60,12 +58,12 @@
                 @click="$router.push({ name: 'profile-my-recipes' })"
             >
                 <img 
-                    :src="user.photoURL" 
-                    alt="Diego"
+                    :src="photoURL" 
+                    :alt="username"
                     class="header__profile-picture">
                 <h3 class="heading-tertiary text-bold d-grid">
-                    {{ user.name }}
-                    <span class="text-normal">{{ user.email }}</span>
+                    {{ username }}
+                    <span class="text-normal">{{ email }}</span>
                 </h3>
             </div>
             <div 
@@ -91,7 +89,7 @@
             </div>
         </div>
         
-        <div class="header__auth-buttons" v-if="currentState !== 'authenticated'">
+        <div class="header__auth-buttons" v-if="authStatus !== 'authenticated'">
             <button
                 class="btn btn--primary"
                 @click="$router.push({ name: 'auth-sign-in' })"
@@ -114,52 +112,54 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue'
-
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapMutations } = createNamespacedHelpers('auth') 
+import { defineAsyncComponent, ref } from 'vue'
+import useAuth from '@/modules/auth/composables/useAuth'
 
 export default {
     components: {
         CustomLink: defineAsyncComponent(() => import(/* CustomLink */'@/components/CustomLink'))
     },
-    data(){
-        return{
-            showMenu: false,
-            showMenuAuth: false,
-            screenWidth: null,
-            links: [
-                { to: 'home', name: 'Inicio', icon: 'house' },
-                { to: 'recipes-home', name: 'Recetas', icon: 'utensils' },
-                { to: 'about', name: 'Acerca de', icon: 'message' },
-            ],
-            authLinks: [
-                { to: 'profile-my-recipes', name: 'Mis recetas', icon: 'mug-hot' },
-                { to: 'profile-new-recipe', name: 'Publicar nueva receta', icon: 'circle-plus' },
-                { to: 'profile-favorite-recipes', name: 'Recetas favoritas', icon: 'bookmark' },
-                { to: 'profile-information', name: 'Información personal', icon: 'address-card' },
-            ]
+    setup() {
+        // Composables
+        const { 
+            authStatus, 
+            username, 
+            email, 
+            photoURL,
+            logout,
+            authLinks,
+            publicLinks
+        } = useAuth()
+
+        // Reactive states
+        const showMenu = ref(false),
+              showMenuAuth = ref(false),
+              screenWidth  = ref(null)
+
+        // Methods
+        const handleResizeWidth = () => {
+            screenWidth.value = window.innerWidth
         }
-    },
-    computed: {
-        ...mapGetters(['currentState', 'user'])
-    },
-    methods: {
-        ...mapMutations(['logout']),
-        handleResizeWidth(){
-            this.screenWidth = window.innerWidth
-        },
-        onLogout(){
-            this.logout()
-            this.$router.push({ name: 'home' })
+
+        screenWidth.value = window.innerWidth
+        window.addEventListener('resize', handleResizeWidth())
+
+        return {
+            authLinks,
+            authStatus,
+            email,
+            logout,
+            photoURL,
+            publicLinks,
+            username,
+            showMenu,
+            showMenuAuth,
+            screenWidth,
+            handleResizeWidth
         }
-    },
-    mounted(){
-        this.screenWidth = window.innerWidth
-        window.addEventListener('resize', this.handleResizeWidth)
     },
     beforeUnmount(){
-        window.removeEventListener('resize', this.handleResizeWidth)
+        window.removeEventListener('resize', handleResizeWidth())
     }
 }
 </script>

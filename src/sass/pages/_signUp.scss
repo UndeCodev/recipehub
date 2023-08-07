@@ -11,44 +11,5 @@
         padding-inline: 2rem;
     }
 
-    &__photo{
-        aspect-ratio: 1 / 1;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-        width: 100%;
-        
-        &-container{
-            border-radius: 3px;
-            display: grid;
-            gap: 12rem;
-            height: 20rem;
-            margin-inline: auto;
-            overflow: hidden;
-            place-items: center;
-            position: relative;
-            width: 20rem;
-        }
 
-        &-buttons {
-            display: grid;
-            justify-items: center;
-
-            & > i {
-                font-size: 2.5rem;
-                color: variables.$color-primary;            
-            }
-        }
-
-        &-change{
-            align-items: center;
-            bottom: 1.5rem; 
-            display: flex;
-            height: 3.5rem;
-            place-content: center;
-            position: absolute;
-            right: 1.5rem;
-            width: 3.5rem;
-        }
-    }
 }

@@ -14,7 +14,7 @@
           </h3>
           <h3 class="heading-tertiary text-normal text-white">
             <i class="fa-solid fa-clock"></i>
-            {{ recipe.totalTimePrep }}
+            {{ recipe.totalTime }}
           </h3>
         </div>
       </div>

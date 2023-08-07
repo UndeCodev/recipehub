@@ -1,6 +1,9 @@
 @use '../abstracts/variables';
 @use '../abstracts/animations';
 
+// Widths
+.w-50{ width: 50%; }
+
 // Displays
 .d-none{ display: none; }
 .d-flex{ display: flex; }
@@ -22,6 +25,8 @@
 .justify-content-end{ justify-content: end; }
 .justify-content-center{ justify-content: center; }
 
+.justify-items-center{ justify-items: center; }
+
 // Margins
 .mt-sm{ margin-top: 1rem; }
 .mt-md{ margin-top: 2rem; }
@@ -31,6 +36,7 @@
 .ml-auto{ margin-left: auto; }
 .mr-auto{ margin-right: auto; }
 
+.m-inline-auto{ margin-inline: auto; }
 
 .mb-sm{ margin-bottom: 1rem; }
 .mb-md{ margin-bottom: 2rem; }

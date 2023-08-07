@@ -1,7 +1,7 @@
 <template>
   <form 
       class="sign-up"
-      @submit.prevent="onSignUp">
+      @submit.prevent="onSubmit">
       <h1 class="heading-primary text-bold">Únete a nuestra comunidad.</h1>
       <div class="mt-sm">
           <p>Coloca tus datos para poder registrarte.</p>
@@ -16,42 +16,10 @@
           </p>
       </div>
       <div 
-        class="form-group sign-up__photo-container mt-lg"
-        :style="`${!localImage ? 'border: 2px dashed #adb5bd' : ''}`"
+        class="form-group w-50 mt-lg m-inline-auto"
+        style="height: 20rem;"
       >
-        <div
-          v-show="!localImage"
-          class="sign-up__photo-buttons"
-        >
-          <i class="fa-solid fa-image"></i>
-          <button 
-            type="button" 
-            class="btn btn--primary mt-md"
-            @click="onSelectImage"
-          >
-            Seleccionar foto
-          </button>
-          <input 
-            type="file" 
-            @change="onSelectedImage"
-            ref="selectorImage"
-            v-show="false"
-            accept="image/png, image/jpeg, image/jpg"
-          >
-        </div>
-        <div v-if="localImage">
-          <img 
-            :src="localImage"
-            alt="Entry picture"
-            class="sign-up__photo">
-          <button 
-            type="button" 
-            class="btn btn--primary mt-md sign-up__photo-change"
-            @click="onSelectImage"
-          >
-            <i class="fa-regular fa-pen-to-square"></i>
-          </button>
-        </div>
+        <SelectImage @on:change="(file) => user.fileImage = file"/>
       </div>
       <div class="form-group mt-lg">
           <label 
@@ -59,7 +27,7 @@
             class="form-label"
             :class="{ 'text-error ': v$.name.$error }" 
           >
-            Nombre
+            Nombre completo
           </label>
           <div class="form-group__icon">
               <input 
@@ -68,7 +36,7 @@
                   :class="{ 'form-input--error': v$.name.$error }" 
                   placeholder="Nombre completo"
                   id="name"
-                  v-model="name">
+                  v-model="user.name">
               <i class="fa-solid fa-id-card"></i>
           </div>
           <p 
@@ -77,31 +45,6 @@
           >
             {{ v$.name.$errors[0].$message }}
           </p>
-      </div>
-      <div class="form-group mt-md">
-        <label 
-          for="name" 
-          class="form-label"
-          :class="{ 'text-error ': v$.lastNames.$error }" 
-        >
-          Apellidos
-        </label>
-        <div class="form-group__icon">
-          <input 
-            type="text" 
-            class="form-input" 
-            :class="{ 'form-input--error': v$.lastNames.$error }" 
-            placeholder="Apellidos"
-            id="lastNames"
-            v-model="lastNames">
-          <i class="fa-solid fa-id-card"></i>
-        </div>
-        <p 
-          :class="{ 'text-error fade-in-down': v$.lastNames.$error }" 
-          v-if="v$.lastNames.$error"
-        >
-          {{ v$.lastNames.$errors[0].$message }}
-        </p>
       </div>
       <div class="form-group mt-md">
           <label 
@@ -118,7 +61,7 @@
                 :class="{ 'form-input--error': v$.email.$error }" 
                 placeholder="Correo electrónico"
                 id="email"
-                v-model="email">
+                v-model="user.email">
             <i class="fa-solid fa-envelope"></i>
           </div>
           <p 
@@ -143,7 +86,7 @@
               :class="{ 'form-input--error': v$.password.$error }" 
               placeholder="Contraseña"
               id="password"
-              v-model="password">
+              v-model="user.password">
             <i 
               class="fa-solid cursor-pointer"
               :class="!showPassword ? 'fa-eye' : 'fa-eye-slash'"
@@ -193,134 +136,76 @@
 </template>
 
 <script>
+import { defineAsyncComponent, ref } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import { required, email, helpers } from '@vuelidate/validators'
+import { useRouter } from 'vue-router';
 
-import { defineAsyncComponent } from 'vue'
-import { mapActions } from 'vuex'
+import useNotification from '@/modules/shared/composables/useNotification'
+import useValidators from '@/modules/shared/composables/useValidators'
+import useAuth from '../composables/useAuth'
 
 export default {
   components: {
-      ToastNotification: defineAsyncComponent(() => import(/* ToastNotification */'@/modules/shared/components/ToastNotification'))
+      ToastNotification: defineAsyncComponent(() => import(/* ToastNotification */ '@/modules/shared/components/ToastNotification')),
+      SelectImage: defineAsyncComponent(() => import(/* SelectImage */ '@/modules/shared/components/SelectImage')),
   },
-  data(){
-      return{          
-          name: null,
-          lastNames: null,
-          email: null,
-          password: null,
-          v$: null,
-          showPassword: false,
-          localImage: null,
-          file: null,
-          notification: {
-            type: null,
-            title: null,
-            description: null,
-            show: false
-          },
-          showNotification: false
-      }
-  },
-  methods: {
-    ...mapActions('auth', ['signUpUser', 'signWithProvider']),
-    async onSignUpWithProvider(provider){
-      const { ok, message} = await this.signWithProvider(provider)
-      
-      if(!ok){
-        this.showNotification  = true
-        this.notification.show = true
-        this.notification.type = 'error'
-        this.notification.title = 'Error al registrarse.'
-        this.notification.description = message
+  setup() {
+    // Composables
+    const router = useRouter()
 
-        return
-      }
+    const { 
+      showNotification,
+      notification, 
+      toastNotification 
+    } = useNotification()
 
-      this.$router.push({ name: 'profile-redirect' })
-    },
-    async onSignUp(){
-        const result = await this.v$.$validate()
+    const { signUpRules } = useValidators()
+    const { 
+      signUpUser,
+      signUpWithProvider
+    } = useAuth()
+
+    // Reactive states
+    const user = ref({
+      name: null,
+      email: null,
+      password: null,
+      fileImage: null
+    })
+
+    const showPassword = ref(false);
+
+    const v$ = useVuelidate(signUpRules, user)
+
+    return {
+      // Reactive states
+      v$,
+      user,
+      showPassword,
+
+      // Notification settings
+      showNotification,
+      notification,
+      toastNotification,
+
+      // Methods
+      onSubmit: async() => {
+        const isValidForm = await v$.value.$validate()
+        if(!isValidForm) return
         
-        if(!result) return
-        
-        const user = {
-          file: this.file,
-          name: this.name,
-          lastNames: this.lastNames,
-          email: this.email,
-          password: this.password
-        }
+        const { ok, message } = await signUpUser(user.value)
 
-        const { ok, message } = await this.signUpUser(user)
+        if(!ok) toastNotification('error', 'Error al registrarse.', message)
+        else router.push({ name: 'profile-redirect' })
+      },
+      onSignUpWithProvider: async(provider) => {
+        const { ok, message } = await signUpWithProvider(provider)
 
-        if(!ok){
-          this.showNotification  = true
-          this.notification.show = true
-          this.notification.type = 'error'
-          this.notification.title = 'Error al registrarse'
-          this.notification.description = message
-
-          return
-        }
-
-        this.$router.push({ name: 'profile-redirect' })
-    },
-    onSelectedImage(event){
-      const file = event.target.files[0]
-
-      if(!file){
-          this.localImage = null
-          this.file = null
-          return
-      }
-      
-      this.file = file
-      const fr = new FileReader()
-      
-      fr.onload = () => this.localImage = fr.result
-      fr.readAsDataURL(file)
-    },
-    onSelectImage(){
-        this.$refs.selectorImage.click()
-    },
-  },
-  watch:{
-    showNotification(newValue){
-      if(newValue){
-        setTimeout(() => {
-          this.showNotification = false
-        }, 5500);
+        if(!ok) toastNotification('error', 'Error al registrarse.', message)
+        else router.push({ name: 'profile-redirect' })
       }
     }
   },
-  validations(){
-    const passwordValidator = helpers.regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{8,}$/)
-
-    const alpha = helpers.regex(/^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/)
-    
-    return{
-      name: {
-        required: helpers.withMessage('Este campo es obligatorio', required),
-        alpha: helpers.withMessage('Solo se permite texto.', alpha)
-      },
-      lastNames: {
-        required: helpers.withMessage('Este campo es obligatorio', required),
-        alpha: helpers.withMessage('Solo se permite texto.', alpha)
-      },
-      email: {
-        required: helpers.withMessage('Este campo es obligatorio', required),
-        email: helpers.withMessage('Correo electrónico no válido.', email)
-      },
-      password: {
-        required: helpers.withMessage('Este campo es obligatorio', required),
-        passwordValidator: helpers.withMessage('Mínimo 8 carácteres, una minúscula, una mayúscula y un carácter especial.', passwordValidator),
-      }
-    }
-  },
-  created(){
-      this.v$ = useVuelidate() 
-  }
 }
 </script>
 

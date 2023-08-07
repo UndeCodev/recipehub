@@ -28,47 +28,10 @@
     }
 
     &__upload{
-        border-radius: 3px;
-        display: grid;
-        gap: 12rem;
-        height: 35rem;
-        margin-inline: auto;
-        overflow: hidden;
-        place-items: center;
-        position: relative;
-        width: 35rem;
-
-        &-buttons{
-            display: grid;
-            justify-items: center;
-            gap: 2rem;
-
-            & > i{
-                font-size: 3rem;
-                color: variables.$color-primary;
-            }
-        }
-
-        &-photo{
-            & > img{
-                aspect-ratio: 1 / 1;
-                height: 100%;
-                object-fit: cover;
-                object-position: center;
-                width: 100%;
-            }
-
-            & > button{
-                align-items: center;
-                bottom: 1.5rem; 
-                display: flex;
-                height: 3.5rem;
-                place-content: center;
-                position: absolute;
-                right: 1.5rem;
-                width: 3.5rem;
-            }
-        }
+        width: 75%;
+        height: 100%;
+        justify-self: center;
+        align-self: center;
     }
 
     &__ingredients{

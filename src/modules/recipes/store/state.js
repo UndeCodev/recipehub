@@ -1,3 +1,4 @@
 export default () => ({
-    recipe: null
+    recipes: null,
+    favoriteRecipes: null
 })
