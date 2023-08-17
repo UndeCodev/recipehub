@@ -71,7 +71,7 @@
         </div>
         <div class="form-group mt-md">
             <RouterLink 
-                :to="{ name: 'home' }"
+                :to="{ name: 'password-reset' }"
                 class="router-link text-end"
             >
                 ¿Olvidaste tu contraseña?
@@ -145,8 +145,8 @@ export default {
         const showPassword = ref(false)
 
         const user = ref({
-            email: 'test@test.com',
-            password: 'test123'
+            email: null,
+            password: null
         })
 
         const v$ = useVuelidate(signInRules, user)

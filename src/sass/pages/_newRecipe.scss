@@ -3,9 +3,8 @@
 
 .new-recipe{
     margin-inline: auto;
-    max-width: 90rem;
-    margin-block: 5rem;
-    padding: 2rem;
+    max-width: 100rem;
+    padding-block: 6rem;
 
     &--2-columns{ 
         @include mixins.respond(tablet){

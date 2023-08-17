@@ -1,205 +1,109 @@
 @use '../abstracts/variables';
 @use '../abstracts/mixins';
 
-.header{
-    padding: 1.5rem;
-    background-color: variables.$color-white;
-    border-bottom: 1px solid variables.$color-grey-400;
+.header {
+    height: 8rem;
+    width: 100%;
+    position: fixed;
     top: 0;
-    position: sticky;
-    z-index: 2;
-
+    z-index: 4;
     display: grid;
-    grid-template-areas: "logo menu";
-    align-items: center;
+    grid-auto-flow: column;
     justify-content: space-between;
-
-    @include mixins.respond(tablet){
-        grid-template-columns: auto 1fr;
-    }
-
-    &__logo{ 
-        width: 4rem; 
-        grid-area: logo;
-    }
-
-    &__menu{
-        min-width: 20rem;
-        grid-area: menu;
-        background-color: variables.$color-white;
-        border: 1px solid variables.$color-grey-400;
-        border-radius: 8px;
-        position: fixed;
-        inset: 8rem 1rem auto auto;
-        opacity: 0;
-        transform: translateY(-1rem);
+    align-items: center;
+    transition-property: background-color, box-shadow;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
     
+    @include mixins.respond(tablet){
+        padding: 2rem 4rem;
+    }
 
-        &::before{
-            content: '';
-            position: absolute;
-            width: 2rem;
-            height: 2rem;
-            transform: rotate(45deg) translateY(-1.5rem);
-            right: 2rem;
-            border: 1px solid variables.$color-grey-400;
-            background-color: variables.$color-white;
-            border-bottom: none;
-            border-right: none;
-        }
+    &--fixed{
+        transition-property: background-color, box-shadow;
+        transition-duration: 150ms;
+        transition-timing-function: ease-in;
 
-        &--active{
-            opacity: 1; 
-            transform: translateY(1rem);
-        }
+        background-color: variables.$color-white;
+        box-shadow: 1px 1px 2px variables.$color-grey-300;
+    }
 
-        @include mixins.respond(tablet){
-            opacity: 1;
-            transform: none;
-            position: static;
-            min-height: auto;
-            border: none;
-
-            display: grid;
-            grid-auto-flow: column;
-            grid-template-columns: 1fr auto;
-            align-items: center;
-
-            &::before{ display: none; }
-        }
+    &__logo {
+        width: 4rem;
+        height: 4rem;
     }
 
     &__navbar{
-        display: grid;
-        gap: 2rem;
-        padding-block: 2rem;
-
-        & > a.router-link{
-            padding-inline: 2rem;
-        }
-
-        & > a.router-link,
-        & > div > a.router-link{
-            display: grid;
-            grid-template-columns: 1.5rem auto;
-        }
+        display: none;
 
         @include mixins.respond(tablet){
-            grid-auto-flow: column;
-            justify-self: center;
-            border: none;
-            padding: 0;
-
-            & > a.router-link{
-                padding: 0;
-            }
-    
-            & > a.router-link,
-            & > div > a.router-link{
-                display: grid;
-                grid-template-columns: auto auto;
-            }
-        }
-    }
-
-    &__profile{
-        min-width: 25rem;
-        position: fixed;
-        inset: 8rem 2rem auto auto;
-        border: 1px solid variables.$color-grey-400;
-        background-color: variables.$color-white;
-        border-radius: 3px;
-
-        &::before{
-            content: '';
-            position: absolute;
-            width: 2rem;
-            height: 2rem;
-            transform: rotate(45deg) translateY(-1.5rem);
-            right: 2rem;
-            border: 1px solid variables.$color-grey-400;
-            background-color: variables.$color-white;
-            border-bottom: none;
-            border-right: none;
-        }
-
-        &-info{
             display: flex;
-            gap: 1.5rem;
-            align-items: center;
-            border-bottom: 1px solid variables.$color-grey-400;
-            padding: 2rem;
+            gap: 4rem;        
         }
-    
-        &-auth-links{
-            display: grid;
-            gap: 2rem;
-            border-top: 1px solid variables.$color-grey-400;
-            padding: 2rem;
-
-            & > a.router-link{
-                display: grid;
-                grid-template-columns: 1.5rem auto;
-            }
-
-            @include mixins.respond(tablet){
-                border-top: none;
-            }
-        }
-
-        &-picture{
-            width: 4rem;
-            height: 4rem;
-            border-radius: 3rem;
-            object-fit: cover;
-            object-position: center;
-        }
-
     }
-    
-    &__auth-buttons{
-        padding: 2rem;
-        display: grid;
-        border-top: 1px solid variables.$color-grey-400;
+
+    &__login{
+        display: none;
 
         @include mixins.respond(tablet){
-            padding: 0;
-            border-top: none;
+            display: block;
         }
     }
-    
-    &__icon-menu{
-        align-content: center;
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-        display: grid;
-        gap: 4px;
-        height: 2rem;
-        width: 2rem;
-        
-        &-line{
-            background-color: variables.$color-grey-800;
-            border-radius: 2px;
-            height: 3px;
-            transform-origin: left;
-            transition: transform ease .3s, opacity ease .2s;
-    
-            &:nth-child(2){
-                width: 80%;
-                margin-left: auto;
-            }   
-        }   
 
-        &--active{
-            .header__icon-menu-line:first-child{ transform: rotate(45deg);}
-            .header__icon-menu-line:nth-child(2){ opacity: 0 }    
-            .header__icon-menu-line:last-child{ transform: rotate(-45deg);} 
-        }
-        
+    &__menu-icon{
+        display: grid;
+        place-items: center;
+        gap: 2.8px;
+        width: 3rem;
+        height: 3rem;
+        border: 0;
+        background-color: transparent;
+        cursor: pointer;
+
         @include mixins.respond(tablet){
             display: none;
-        }    
+        }
+
+        & > span{
+            background-color: variables.$color-grey-800;
+            height: 3px;
+            width: 100%;
+            border-radius: 5px;
+            transition-property: transform, opacity;
+            transition-duration: 300ms;
+            transition-timing-function: ease;
+            transform-origin: left;
+        }
+
+        &:hover{
+            & span:first-child{
+                transform: rotate(45deg);
+            }
+
+            & span:nth-child(2){
+                opacity: 0;
+            }
+
+            & span:last-child{
+                transform: rotate(-45deg);
+            }
+        }
     }
 }
 
+.navbar-auth{
+    display: grid;
+    grid-auto-flow: column;
+    gap: 2rem;
+
+    &__photo{
+        width: 3.8rem;
+        height: 3.8rem;
+        border-radius: 3rem;
+        object-fit: cover;
+        object-position: center;
+        cursor: pointer;
+        outline: 2px solid variables.$color-white;
+        box-shadow: 0 0 10px rgb(variables.$color-dark, .3);
+    }
+}

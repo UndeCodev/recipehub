@@ -6,6 +6,11 @@ export default {
     component: () => import(/* webpackChunkName: "AuthLayout" */ '@/modules/auth/layout/AuthLayout'),
     children: [
         {
+            path: '',
+            name: 'auth-redirect',
+            redirect: { name: 'auth-sign-in' },
+        },
+        {
             path: 'iniciar-sesion',
             name: 'auth-sign-in',
             meta: {
@@ -22,9 +27,25 @@ export default {
             component: () => import(/* webpackChunkName: "AuthSignIn" */ '@/modules/auth/views/SignUpView'),
         },
         {
-            path: '',
-            name: 'auth-redirect',
-            redirect: { name: 'auth-sign-in' },
-        }
+            path: 'password-reset',
+            name: 'password-reset',
+            meta: {
+                title: 'Restablecer contraseña'
+            },        
+            component: () => import(/* webpackChunkName: "PasswordRecovery" */ '@/modules/auth/views/passwordReset'),
+        },
+        {
+            path: 'reset-password/:token',
+            name: 'reset-password',
+            meta: {
+                title: 'Restablecer contraseña - confirmar'
+            },
+            props: (route) => {
+                return {
+                    token: route.params.token
+                }
+            },     
+            component: () => import(/* webpackChunkName: "PasswordRecovery" */ '@/modules/auth/views/resetPassword'),
+        },
     ]
 }

@@ -2,10 +2,11 @@
     <form 
         class="new-recipe"
         @submit.prevent="onSubmit"
+        ref="formRecipe"
     >
-        <div class="mb-lg">
+        <div class="mb-md">
             <h1 class="heading-primary text-primary">Añade una nueva receta.</h1>
-            <p>¡Subir recetas personales es fácil! Añade la tuya a tus favoritos, compártela con amigos, familiares o con la comunidad RecipeHub.</p>
+            <p class="paragraph">¡Subir recetas personales es fácil! Añade la tuya a tus favoritos, compártela con amigos, familiares o con la comunidad RecipeHub.</p>
         </div>
         <section class="new-recipe-group">
             <h3 class="heading-tertiary text-center">¿Tienes un vídeo en YouTube sobre como elaborar tu receta?</h3>
@@ -17,7 +18,7 @@
                         :class="{ 'text-error ': v$.videoURL.$error }" 
                     >
                         Añade aquí la URL de tu vídeo
-                        <small class="text-normal">
+                        <small class="text-normal paragraph">
                             <span class="text-bold">Nota:</span>
                             Solo se permiten vídeos de YouTube
                         </small>
@@ -123,7 +124,7 @@
         <section class="new-recipe-group">
             <div class="form-group">
                 <h3 class="heading-tertiary text-bold">Ingredientes</h3>
-                <p>Introduzca un ingrediente por línea. Incluya la cantidad (por ejemplo, tazas, cucharadas) y cualquier preparación especial (por ejemplo, tamizada, ablandada, picada). Utilice encabezados opcionales para organizar las distintas partes de la receta (por ejemplo, Tarta, Glaseado, Aderezo).</p>
+                <p class="paragraph">Introduzca un ingrediente por línea. Incluya la cantidad (por ejemplo, tazas, cucharadas) y cualquier preparación especial (por ejemplo, tamizada, ablandada, picada). Utilice encabezados opcionales para organizar las distintas partes de la receta (por ejemplo, Tarta, Glaseado, Aderezo).</p>
             </div>
             <div 
                 class="form-group new-recipe__ingredients"
@@ -149,13 +150,13 @@
                 {{ v$.ingredients.$errors[0].$message }}
             </p>
             <div class="d-flex gap-md mt-sm">
-                <button 
+                <!-- <button 
                     type="button"
                     class="btn btn--secondary btn--md"
                     disabled
                 >
                     Añadir encabezado
-                </button>
+                </button> -->
                 <button 
                     type="button" 
                     class="btn btn--primary btn--md"
@@ -168,7 +169,7 @@
         <section class="new-recipe-group">
             <div class="form-group">
                 <h3 class="heading-tertiary text-bold">Pasos</h3>
-                <p>Explique cómo hacer su receta, incluyendo las temperaturas del horno, los tiempos de horneado o cocción y los tamaños de los moldes, etc. Utiliza encabezados opcionales para organizar las distintas partes de la receta (por ejemplo, Preparación, Horneado, Decoración).</p>
+                <p class="paragraph">Explique cómo hacer su receta, incluyendo las temperaturas del horno, los tiempos de horneado o cocción y los tamaños de los moldes, etc. Utiliza encabezados opcionales para organizar las distintas partes de la receta (por ejemplo, Preparación, Horneado, Decoración).</p>
             </div>
             <div 
                 class="form-group new-recipe__ingredients"
@@ -203,13 +204,13 @@
                 {{ v$.steps.$errors[0].$message }}
             </p>
             <div class="d-flex gap-md mt-sm">
-                <button 
+                <!-- <button 
                     type="button"
                     class="btn btn--secondary btn--md"
                     disabled
                 >
                     Añadir encabezado
-                </button>
+                </button> -->
                 <button 
                     type="button" 
                     class="btn btn--primary btn--md"
@@ -320,8 +321,15 @@
                     id="publicRecipe"
                     class="form-checkbox">
                 <div class="d-grid">
-                    <label for="publicRecipe">Recetas públicas</label>
-                    <small>Cualquiera que vea mi perfil puede ver esta receta.</small>
+                    <label 
+                        for="publicRecipe"
+                        class="text-bold"
+                    >
+                        Recetas públicas
+                    </label>
+                    <p class="paragraph">
+                        Cualquiera que vea mi perfil puede ver esta receta.
+                    </p>
                 </div>
             </div>
             <div class="form-group__checkbox">
@@ -330,21 +338,25 @@
                     id="sendRecipe"
                     class="form-checkbox">
                 <div class="d-grid">
-                    <label for="sendRecipe">Enviar esta receta para revisión.</label>
-                    <small>
+                    <label 
+                        for="sendRecipe"
+                        class="text-bold"
+                    >
+                        Enviar esta receta para revisión.
+                    </label>
+                    <p class="paragraph">
                         <span class="text-bold">Más información:</span> 
                         Comparta su receta con la comunidad. Si tu receta es seleccionada por nuestros editores, se publicará en el sitio. Otros cocineros caseros podrán guardar, revisar, comentar y compartir su receta.
-                    </small>
+                    </p>
                 </div>
             </div>
             <div class="d-flex gap-md mt-sm justify-content-end">
                 <button 
                     type="button"
                     class="btn btn--secondary btn--md d-flex gap-sm align-items-center"
-                    @click="addHeaderIngredients"
-                    disabled
+                    @click="$refs.formRecipe.reset()"
                 >
-                    Borrar formulario
+                    Resetear formulario
                     <i class="fa-solid fa-trash"></i>
                 </button>
                 <button 
@@ -387,7 +399,7 @@ export default {
             categories,
             
             // Methods
-            getRecipeCategories,
+            getCategories,
             createNewRecipe,
             addElement,
             removeElement,
@@ -408,10 +420,9 @@ export default {
 
         // Methods
         const onLoadCategories = async() => {
-            const { ok, message } = await getRecipeCategories()
+            await getCategories()
 
-            if(!ok) toastNotification('error', 'Error al cargar las categorías.', message)
-            else recipe.value.category = categories.value[0]._id
+            recipe.value.category = categories.value[0]._id
         }
 
         onLoadCategories()

@@ -3,10 +3,6 @@
 .fa-solid{
     transition: color ease .3s;
 
-    & + a{
-        padding-inline-start: 1.5rem;
-    }
-
     &--active{
         color: variables.$color-primary;
     }

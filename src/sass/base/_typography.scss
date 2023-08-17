@@ -18,27 +18,30 @@
     font-size: variables.$fs-fluid-1;    
 }
 
+.paragraph{
+    line-height: 1.8;
+}
+
 .router-link{
+    font-size: variables.$fs-fluid-0;    
     cursor: pointer;
     transition: color ease .3s;
     color: variables.$color-grey-800;
+    font-weight: 400;
 
-    &--active{
+    &--active,
+    &-exact-active{
         color: variables.$color-primary;
         text-decoration: none;
     }
 
     &--normal{
         text-decoration: none;
-        color: rgb(variables.$color-dark, .5);
+        color: variables.$color-grey-700;
         transition: color ease .3s;
 
         &:hover{
             color: variables.$color-grey-800;
-
-            & ~ i{
-                color: red !important;
-            }
         }
     }
 }

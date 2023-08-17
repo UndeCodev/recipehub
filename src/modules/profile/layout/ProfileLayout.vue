@@ -1,22 +1,18 @@
 <template>
     <div class="profile">
-        <div class="profile__information">
-            <img 
-                :src="photoURL" 
-                :alt="`${username} - picture`"
-                class="profile__information-picture">
-            <h2 class="heading-primary text-normal mt-md">{{ username }}</h2>
-            <h3 class="heading-secondary text-regular">{{ rol }}</h3>
-        </div>
-        <nav class="profile__navbar">
+        <div class="profile__navbar">
             <CustomLink
                 v-for="link in authLinks"
                 :key="link.to"
                 :link="link"
             />
-        </nav>
-        <div class="profile__content">
-            <RouterView/>
+        </div>
+        <div class="profile__main">
+            <router-view v-slot="{ Component }">
+              <keep-alive>
+                <component :is="Component" />
+              </keep-alive>
+            </router-view>
         </div>
     </div>
 </template>

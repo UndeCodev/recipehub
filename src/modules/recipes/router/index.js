@@ -11,12 +11,25 @@ export default {
             redirect: { name: 'recipes-home' }
         },
         {
-            path: 'inicio',
+            path: '',
             name: 'recipes-home',
             meta: {
                 title: 'Recetas'       
             },        
             component: () => import(/* webpackChunkName: "RecipesView" */ '@/modules/recipes/views/RecipesView'),
         },
+        {
+            path: 'categoria/:id',
+            name: 'recipes-category',
+            meta: {
+                title: 'Recetas por categoria'       
+            },
+            props: (route) => {
+                return {
+                    id: route.params.id
+                }
+            },        
+            component: () => import(/* webpackChunkName: "templateRecipe" */ '@/modules/recipes/views/RecipesByCategory'),
+          },
     ]
 }

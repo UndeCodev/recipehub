@@ -1,169 +1,168 @@
-import VuewJwtDecode from 'vue-jwt-decode'
-import recipehubApi from '@/api/recipehubApi'
+import VuewJwtDecode from "vue-jwt-decode";
+import recipehubApi from "@/api/recipehubApi";
 
-import '@/modules/auth/helpers/firebase.js'
-import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth'
+import "@/modules/auth/helpers/firebase.js";
+import {
+	getAuth,
+	signInWithPopup,
+	GoogleAuthProvider,
+	FacebookAuthProvider,
+} from "firebase/auth";
 
-const auth = getAuth()
+const auth = getAuth();
 
-export const signUpUser = async({ commit }, userToRegister) => {
+export const signUpUser = async ({ commit }, userToRegister) => {
+	const { name, lastNames, email, password, fileImage } = userToRegister;
 
-    const { name, lastNames, email, password, file } = userToRegister
+	const formData = new FormData();
+	formData.append("name", name);
+	formData.append("last_names", lastNames);
+	formData.append("email", email);
+	formData.append("password", password);
+	formData.append("fileImage", fileImage);
 
-    const formData = new FormData()
-    formData.append('name', name)
-    formData.append('last_names', lastNames)
-    formData.append('email', email)
-    formData.append('password', password)
-    formData.append('profile_picture', file)
+	try {
+		const { data } = await recipehubApi.post("/auth/signup", formData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		});
 
-    try{
-        const response = await fetch(`${API_URL}/auth/signup`, {
-            method: 'POST',
-            body: formData
-        })
+		const { token } = data;
+		const { user } = VuewJwtDecode.decode(token);
 
-        if(!response.ok){
-            const { message } = await response.json()
-            throw new Error(message)
-        }
+		commit("signInUser", { user, token });
 
-        const { token } = await response.json()
-        const { user } = VuewJwtDecode.decode(token)
+		return { ok: true };
+	} catch (error) {
+		return { ok: false, message: error.response.data.message };
+	}
+};
 
-        commit('signInUser', { user, token })
-        
-        return { ok: true }
-    }catch(error){
-        return { ok: false, message: error.message }
-    }
-}
+export const signInUser = async ({ commit }, { email, password }) => {
+	try {
+		const { data } = await recipehubApi.post("/auth/signin", {
+			email,
+			password,
+		});
 
-export const signInUser = async({ commit }, { email, password }) => {
-    try{
-        const { data } = await recipehubApi.post('/auth/signin', { email, password });
-        
-        const { token } = data;
-        const { user } = VuewJwtDecode.decode(token);
+		const { token } = data;
+		const { user } = VuewJwtDecode.decode(token);
 
+		commit("signInUser", { user, token });
 
-        commit('signInUser', { user, token });
+		return { ok: true };
+	} catch (error) {
+		return { ok: false, message: error.response.data.message };
+	}
+};
 
-        return { ok: true }
-    }catch(error){
-        return { ok: false, message: error.response.data.message }
-    }
-}
+export const signInWithProvider = async ({ commit }, providerId) => {
+	const providers = {
+		facebook: new FacebookAuthProvider(),
+		google: new GoogleAuthProvider(),
+	};
 
-export const signInWithProvider = async({ commit }, providerId ) => {
-    const providers = {
-        facebook: new FacebookAuthProvider(),
-        google: new GoogleAuthProvider(),
-    }
+	const provider = providers[providerId];
 
-    const provider = providers[providerId]
+	try {
+		if (!provider) throw "Proveedor no válido o no proporcionado.";
 
-    try{
-        if(!provider) throw('Proveedor no válido o no proporcionado.')
+		const { user: userProvider } = await signInWithPopup(auth, provider);
 
-        const { user: userProvider } = await signInWithPopup(auth, provider)
+		const { uid, displayName: name, email, photoURL } = userProvider;
 
-        const {
-            uid, 
-            displayName: name, 
-            email, 
-            photoURL, 
-        } = userProvider
-        
-        const user = {
-            name,
-            email,
-            images: {
-                photoURL
-            }
-        }
+		const user = {
+			name,
+			email,
+			images: {
+				photoURL,
+			},
+		};
 
-        const { data } = await recipehubApi.post('/auth/signin-provider', { uid });
-        const { token } = data
+		const { data } = await recipehubApi.post("/auth/signin-provider", {
+			uid,
+		});
+		const { token } = data;
 
-        commit('signInUser', { user, token })
+		commit("signInUser", { user, token });
 
-        return { ok: true }
-    }catch(error){
-        if(error.code === 'auth/popup-closed-by-user'){
-            error = `Ventana de ${providerId} cerrada.`
-        }
-        
-        return { ok: false, message: error }
-    }
-}
+		return { ok: true };
+	} catch (error) {
+		if (error.code === "auth/popup-closed-by-user") {
+			error = `Ventana de ${providerId} cerrada.`;
+		}
 
-export const signUpWithProvider = async({ commit }, providerId ) => {
-    const providers = {
-        facebook: new FacebookAuthProvider(),
-        google: new GoogleAuthProvider(),
-    }
+		return { ok: false, message: error };
+	}
+};
 
-    const provider = providers[providerId]
+export const signUpWithProvider = async ({ commit }, providerId) => {
+	const providers = {
+		facebook: new FacebookAuthProvider(),
+		google: new GoogleAuthProvider(),
+	};
 
-    try{
-        if(!provider) throw('Proveedor no válido o no proporcionado.')
+	const provider = providers[providerId];
 
-        const { user: userProvider } = await signInWithPopup(auth, provider)
+	try {
+		if (!provider) throw "Proveedor no válido o no proporcionado.";
 
-        const { 
-            uid,
-            displayName: name, 
-            email, 
-            photoURL, 
-            providerId 
-        } = userProvider
-        
-        const { data } = await recipehubApi.post('/auth/signup-provider', {
-            uid,
-            name,
-            email,
-            photoURL,
-            providerId
-        }) 
+		const { user: userProvider } = await signInWithPopup(auth, provider);
 
-        const { token } = data;
-        const { user } = VuewJwtDecode.decode(token);
+		const {
+			uid,
+			displayName: name,
+			email,
+			photoURL,
+			providerId,
+		} = userProvider;
 
-        commit('signInUser', { user, token, providerId })
+		const { data } = await recipehubApi.post("/auth/signup-provider", {
+			uid,
+			name,
+			email,
+			photoURL,
+			providerId,
+		});
 
-        return { ok: true }
-    }catch(error){
-        if(error.code === 'auth/popup-closed-by-user'){
-            error = `Ventana de ${providerId} cerrada.`
-        }
-        
-        return { ok: false, message: error.response.data.message }
-    }
-}
+		const { token } = data;
+		const { user } = VuewJwtDecode.decode(token);
 
-export const checkAuthentication = async({ commit }) => {
-    const token = localStorage.getItem('token')
-    
-    if(!token){
-        commit('logout')
-        return { ok: false, message: 'No existe un token' }
-    }
-    
-    try{        
-        await recipehubApi.get('/auth/verify-token', {
-            headers: {
-                'x-access-token': token
-            }
-        });
-        
-        const { user } = VuewJwtDecode.decode(token)        
+		commit("signInUser", { user, token, providerId });
 
-        commit('signInUser', { user, token });
-        
-        return { ok: true }
-    }catch(error){
-       commit('logout')
-       return { ok: false, message: error.response.data.message } 
-    }
-}
+		return { ok: true };
+	} catch (error) {
+		if (error.code === "auth/popup-closed-by-user") {
+			error = `Ventana de ${providerId} cerrada.`;
+		}
+
+		return { ok: false, message: error.response.data.message };
+	}
+};
+
+export const checkAuthentication = async ({ commit }) => {
+	const token = localStorage.getItem("token");
+
+	if (!token) {
+		commit("logout");
+		return { ok: false, message: "No existe un token" };
+	}
+
+	try {
+		await recipehubApi.get("/auth/verify-token", {
+			headers: {
+				"x-access-token": token,
+			},
+		});
+
+		const { user } = VuewJwtDecode.decode(token);
+
+		commit("signInUser", { user, token });
+
+		return { ok: true };
+	} catch (error) {
+		commit("logout");
+		return { ok: false, message: error.response.data.message };
+	}
+};

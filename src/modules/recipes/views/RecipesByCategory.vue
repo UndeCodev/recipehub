@@ -1,6 +1,7 @@
 <template>
+    <h1 v-if="!recipes" class="text-center">No hay recetas con esta categoría</h1>
     <section 
-        v-if="recipes"
+        v-else
         class="recipes-layout"
     >
         <RecipeCard
@@ -21,36 +22,44 @@
 </template>
 
 <script>
-import { defineAsyncComponent, onMounted } from 'vue'
+import { defineAsyncComponent, onMounted, watch } from 'vue'
 import useRecipes from '../composables/useRecipes'
 
 export default {
+    props: {
+        id: {
+            type: String,
+            required: true
+        }
+    },
     components: {
         RecipeCard: defineAsyncComponent(() => import(/* RecipeCard */'@/modules/recipes/components/recipeCard')),
     },
-    setup() {
-        // Composables 
+    setup(props){
+        // Composables
         const { 
-            getRecipes,
-            recipes 
+            recipes,
+            getRecipesByCategory
         } = useRecipes()
 
-        // Methods
-
-        // Reactive states
-
-        // Lifecycle Hooks
         onMounted(async() => {
-            await getRecipes()
+            await getRecipesByCategory(props.id)
         })
 
+        watch(
+            () => props.id,
+            async() => {
+                await getRecipesByCategory(props.id)
+            }
+        )
+
         return {
-            recipes,
+            recipes
         }
     }
 }
 </script>
 
-<style lang="scss" scoped>
-@use '@/sass/pages/recipes';
+<style>
+
 </style>

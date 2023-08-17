@@ -12,7 +12,7 @@
 
     @include mixins.respond(tablet){
         grid-template-columns: 1.5fr 2fr;
-        grid-auto-rows: minmax(95vh, 115vh);
+        grid-auto-rows: minmax(95vh, auto);
         gap: 2rem;
         
         &__forms{

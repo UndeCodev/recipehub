@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 export default {
     props: {
@@ -45,6 +45,13 @@ export default {
 
         const modifierClass = ref(null)
         modifierClass.value = `toast-notification${classes.value[props.notification.type]}`
+    
+        watch(
+            () => props.notification.type,
+            () => {
+                modifierClass.value = `toast-notification${classes.value[props.notification.type]}`
+            }
+        )
 
         return {
             icons,

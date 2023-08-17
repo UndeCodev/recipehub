@@ -1,5 +1,8 @@
 <template>
-  <article class="card-recipe">
+  <article 
+    class="card-recipe"
+    @click="$router.push({ name: 'recipe-by-id', params: { id: recipe.id } })"
+  >
     <img 
       :src="recipe.recipeCover" 
       alt="Food"

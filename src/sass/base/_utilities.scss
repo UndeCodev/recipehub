@@ -2,7 +2,10 @@
 @use '../abstracts/animations';
 
 // Widths
+.w-25{ width: 25%; }
 .w-50{ width: 50%; }
+.w-75{ width: 75%; }
+.w-100{ width: 100%; }
 
 // Displays
 .d-none{ display: none; }
@@ -35,6 +38,14 @@
 .mx-auto{ margin-inline: auto; }
 .ml-auto{ margin-left: auto; }
 .mr-auto{ margin-right: auto; }
+
+.mr-sm{ margin-right: 5px; }
+.mr-md{ margin-right: 1rem; }
+.mr-lg{ margin-right: 1.5rem; }
+
+.ml-sm{ margin-left: 5px; }
+.ml-md{ margin-left: 1rem; }
+.ml-lg{ margin-left: 1.5rem; }
 
 .m-inline-auto{ margin-inline: auto; }
 

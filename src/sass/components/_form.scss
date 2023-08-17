@@ -41,17 +41,18 @@
     transition: border ease .3s;
     border: 1px solid variables.$color-grey-500;
     
-    &::placeholder{ color: variables.$color-grey-700; }
-    &:hover{ border: 1px solid variables.$color-grey-700 }
+    &::placeholder{ color: variables.$color-grey-600; }
+    &:hover{ border: 1px solid variables.$color-grey-600 }
 
     &:focus { 
-        border: 1px solid variables.$color-grey-800; 
-
-        & + i{ color: variables.$color-grey-800; }
+        border: 1px solid variables.$color-grey-700; 
     }
 
     // Sizes
-    &--md{ padding: 1.5rem; }
+    &--md{ 
+        padding: 1.5rem; 
+        font-size: variables.$fs-fluid-0;
+    }
 
     // States
     &--error{
@@ -78,5 +79,39 @@
 
     &::-webkit-scrollbar{
         width: 0;
+    }
+}
+
+.search-link{
+    border: 1px solid variables.$color-grey-500;
+    background-color: variables.$color-white;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 3px;
+
+    & > ul {
+        list-style: none;
+
+        & > li{
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            height: 4rem;
+            margin: 0;
+            padding: 1rem;
+            transition: background-color ease-out 300ms;
+
+            &:hover{
+                transition: background-color ease-out 300ms;
+                background-color: variables.$color-grey-300;
+            }
+
+            & > a{
+                width: 100%;
+                height: 100%;
+                text-decoration: none;
+                color: variables.$color-grey-900;
+            }
+        }
     }
 }

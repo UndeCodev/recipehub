@@ -7,16 +7,16 @@ const useAuth = () => {
 
     // Reactive states
     const publicLinks = ref([
-        { to: 'home', name: 'Inicio', icon: 'house' },
-        { to: 'recipes-home', name: 'Recetas', icon: 'utensils' },
-        { to: 'about', name: 'Acerca de', icon: 'message' },
+        { to: 'home', name: 'Inicio' },
+        { to: 'recipes-home', name: 'Recetas' },
+        { to: 'about', name: 'Acerca de' },
     ]);
 
     const authLinks = ref([
-        { to: 'profile-my-recipes', name: 'Mis recetas', icon: 'mug-hot' },
-        { to: 'profile-new-recipe', name: 'Publicar nueva receta', icon:'circle-plus' },
-        { to: 'profile-favorite-recipes', name: 'Recetas favoritas', icon:'bookmark' },
-        { to: 'profile-information', name: 'Información personal', icon: 'address-card' }
+        { to: 'profile-my-recipes', name: 'Mis recetas' },
+        { to: 'profile-new-recipe', name: 'Publicar nueva receta' },
+        { to: 'profile-favorite-recipes', name: 'Recetas favoritas' },
+        { to: 'profile-information', name: 'Información personal' }
     ]);
 
     // Methods

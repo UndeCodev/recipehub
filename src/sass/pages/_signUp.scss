@@ -4,8 +4,7 @@
 .sign-up {
     display: grid;
     width: min(50rem, 100%);
-    margin-block: 5rem;
-    margin-inline: auto;
+    margin: 10rem auto;
 
     @include mixins.respond(tablet) {
         padding-inline: 2rem;

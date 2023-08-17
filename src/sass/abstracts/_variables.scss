@@ -1,4 +1,4 @@
-$fs-fluid-0: clamp(1.28rem, calc(1.18rem + 0.50vw), 1.56rem);
+$fs-fluid-0: clamp(1.28rem, calc(1.18rem + 0.50vw), 1.45rem);
 // $fs-fluid-0: clamp(1.00rem, calc(0.89rem + 0.54vw), 1.31rem);
 $fs-fluid-1: clamp(1.20rem, calc(1.05rem + 0.77vw), 1.64rem);
 $fs-fluid-2: clamp(1.44rem, calc(1.23rem + 1.06vw), 2.05rem);
@@ -8,7 +8,8 @@ $fw-700: 700;
 $fw-500: 500;
 $fw-400: 400;
 
-$color-primary: hsl(161, 100%, 33%);
+// $color-primary: hsl(145, 100%, 40%);
+$color-primary: hsl(146, 70%, 45%);
 
 $color-white: hsl(0, 0%, 100%);
 $color-dark: hsl(202, 46%, 15%);

@@ -66,9 +66,29 @@ const useRecipes = () => {
         totalTime: 0,
     })
 
-    const recipesByAuthor = ref()
-    const recipes = ref()
+    const recipesByAuthor = ref(),
+          recipeById = ref();
 
+    let page = ref(1),
+        recipes = ref(null),
+        lastRecipe = ref(null) 
+
+    const categories = ref()
+
+    let observer = new IntersectionObserver((entrys, observador) => {
+        console.log(entrys);
+    
+        // entradas.forEach(entrada => {
+        //     if(entrada.isIntersecting){
+        //         pagina++;
+        //         cargarPeliculas();
+        //     }
+        // });
+    }, {
+        rootMargin: '0px 0px 200px 0px',
+        threshold: 1.0
+    });
+        
     // Methods
     const changeUnits = (event, index) =>{
         const unit = event.target.value.trim()
@@ -81,54 +101,79 @@ const useRecipes = () => {
         recipe.value.totalTime = calculateTotalTime(recipe.value.times)
     }
 
-    const getRecipesByAuthor = async() => {
-        try {
-            const { data } = await recipehubApi.get(`/recipe/author/${userId.value}`)
-
-            recipesByAuthor.value = data.length > 0 ? data : null
-
-            console.log(data);
-            
-            return { ok: true }
-        } catch (error) {
-            return { ok: false, message: error.response.data.message }
-        }
-    }
-
     const getRecipes = async() => {
         try {
             const { data } = await recipehubApi.get('/recipe')
 
             recipes.value = data
-
-            return { ok: true }
-        } catch (error) {
-            return { ok: false, message: error.response.data.message }
+        }catch(error) {
+            throw new Error(error.response.data.message)
         }
     }
 
-    const getRecipeCategories = async() => await store.dispatch('recipes/getRecipeCategories');
+    const getRecipesByCategory = async(category) => {
+        try {
+            const { data } = await recipehubApi.get(`/recipe/category/${category}`)
+
+            recipes.value = data.length ? data : null  
+        }catch(error) {
+            throw new Error(error.response.data.message)
+        }
+    }
+
+    const getRecipeById = async(id) => {
+        try {
+            const { data } = await recipehubApi.get(`/recipe/${id}`)
+
+            recipeById.value = data  
+        }catch(error) {
+            throw new Error(error.response.data.message)
+        }
+    }
+
+    const getRecipesByAuthor = async() => {
+        try {
+            const { data } = await recipehubApi.get(`/recipe/author/${userId.value}`)
+
+            recipesByAuthor.value = data
+        }catch(error) {
+            throw new Error(error.response.data.message)
+        }
+    }
+
+    const getCategories = async() => {
+        try {
+            const { data } = await recipehubApi.get('/category')
+
+            categories.value = data
+        }catch(error) {
+            throw new Error(error.response.data.message)
+        }
+    }
 
     const createNewRecipe = async() => await store.dispatch('recipes/createNewRecipe', recipe.value)
 
     return {
         // Reactive states
+        categories,
         recipe,
+        recipeById,
         recipes,
         recipesByAuthor,
 
         // Methods
+        getRecipes,
+        getRecipesByCategory,
         getRecipesByAuthor,
-        getRecipeCategories,
+        getRecipeById,
+        getCategories,
         createNewRecipe,
         addElement,
         removeElement,
         changeUnits,
         calculateTime,
-        getRecipes,
 
         // Getters
-        categories: computed(() => store.getters['recipes/categories']),
     }
 }
 

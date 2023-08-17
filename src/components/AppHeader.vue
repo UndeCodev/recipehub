@@ -1,165 +1,98 @@
 <template>
-  <header class="header">
+    <header 
+        class="header"
+        :class="{ 'header--fixed' : isFixed  }"
+    >
     <img 
         src="@/assets/logos/recipehub-icon.svg" 
-        alt="RecipeHub Logo" 
-        class="header__logo cursor-pointer"
-        @click="$router.push({ name: 'home' })">
-    <div 
-        class="header__menu"
-        :class="{'header__menu--active' : showMenu}"
+        alt="RecipeHub - Logo" 
+        class="header__logo">
+    <nav class="header__navbar">
+        <CustomLink
+            v-for="link in publicLinks"
+            :key="link.to"
+            :link="link"
+        />
+    </nav>
+    <template
+        v-if="authStatus === 'authenticated'"
     >
-        <nav 
-            class="header__navbar"
-        >
-            <div 
-                v-if="authStatus === 'authenticated' && screenWidth < 768"
-                class="header__profile-info">
-                <img 
-                    :src="photoURL" 
-                    :alt="username"
-                    class="header__profile-picture">
-
-                <h3 class="heading-tertiary text-bold d-grid">
-                    {{ username }}
-                    <span class="text-normal">{{ email }}</span>
-                </h3>
-            </div>
-            <CustomLink
-                v-for="link in publicLinks"
-                :key="link.to"
-                :link="link"
-            />
-            <div 
-                v-if="authStatus === 'authenticated' && screenWidth < 768"
-                class="header__profile-auth-links"
-            >
-                <CustomLink
-                    v-for="link in authLinks"
-                    :key="link.to"
-                    :link="link"
-                />
-            </div>
-        </nav>
-
-        <img 
-            v-if=" authStatus === 'authenticated' && screenWidth > 768"
-            :src="photoURL" 
-            @click="showMenuAuth = !showMenuAuth"
-            alt="Diego"
-            class="header__profile-picture cursor-pointer">
         <div 
-            v-if=" authStatus === 'authenticated' && screenWidth > 768 && showMenuAuth"
-            class="header__profile"
-            :class="{'header__profile--active' : showMenuAuth}"
+            class="navbar-auth"
         >
-            <div 
-                class="header__profile-info cursor-pointer"
-                @click="$router.push({ name: 'profile-my-recipes' })"
+            <router-link
+                :to="{ name: 'profile-my-recipes' }"
             >
                 <img 
                     :src="photoURL" 
-                    :alt="username"
-                    class="header__profile-picture">
-                <h3 class="heading-tertiary text-bold d-grid">
-                    {{ username }}
-                    <span class="text-normal">{{ email }}</span>
-                </h3>
-            </div>
-            <div 
-                class="header__profile-auth-links"
-            >
-                <CustomLink
-                    v-for="link in authLinks"
-                    :key="link.to"
-                    :link="link"
-                />
-                <RouterLink
-                    class="router-link router-link--normal d-grid"
-                    @click="logout"
-                    :to="{ name: 'home' }"
-                >
-                    <i class="fa-solid fa-arrow-right-from-bracket text-bold"></i> 
-                    <a 
-                        class="router-link router-link--normal"
-                    >
-                        Cerrar sesión
-                    </a>
-                </RouterLink>
-            </div>
-        </div>
-        
-        <div class="header__auth-buttons" v-if="authStatus !== 'authenticated'">
-            <button
+                    :alt="username" 
+                    class="navbar-auth__photo">
+            </router-link>
+            <button 
                 class="btn btn--primary"
-                @click="$router.push({ name: 'auth-sign-in' })"
+                @click="onLogout"
             >
-                Iniciar sesión
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
             </button>
         </div>
-    </div>
-    <button 
-        v-if="screenWidth < 768"
-        class="header__icon-menu"
-        :class="{ 'header__icon-menu--active' : showMenu }"
-        @click="showMenu = !showMenu"
+    </template>
+    <router-link 
+        v-else
+        class="btn btn--white header__login"
+        :to="{ name: 'auth-sign-in' }"
     >
-        <span class="header__icon-menu-line"></span>
-        <span class="header__icon-menu-line"></span>
-        <span class="header__icon-menu-line"></span>
+        Iniciar sesión
+    </router-link>
+    <button class="header__menu-icon">
+        <span></span>
+        <span></span>
+        <span></span>
     </button>
   </header>
 </template>
 
 <script>
-import { defineAsyncComponent, ref } from 'vue'
 import useAuth from '@/modules/auth/composables/useAuth'
-
+import { defineAsyncComponent, ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 export default {
     components: {
-        CustomLink: defineAsyncComponent(() => import(/* CustomLink */'@/components/CustomLink'))
+        CustomLink: defineAsyncComponent(() => import(/* webpackChunkName: "CustomLink" */'@/components/CustomLink'))
     },
     setup() {
         // Composables
+        const router = useRouter()
+        
         const { 
-            authStatus, 
-            username, 
-            email, 
+            publicLinks,
             photoURL,
-            logout,
-            authLinks,
-            publicLinks
-        } = useAuth()
+            authStatus,
+            username,
 
+            logout
+            } = useAuth()
+        
         // Reactive states
-        const showMenu = ref(false),
-              showMenuAuth = ref(false),
-              screenWidth  = ref(null)
+        const isFixed = ref(false)
 
-        // Methods
-        const handleResizeWidth = () => {
-            screenWidth.value = window.innerWidth
-        }
-
-        screenWidth.value = window.innerWidth
-        window.addEventListener('resize', handleResizeWidth())
+        onMounted(() => {
+            window.addEventListener('scroll', () => {
+              isFixed.value = window.scrollY > 0;
+            });
+        });
 
         return {
-            authLinks,
-            authStatus,
-            email,
-            logout,
-            photoURL,
             publicLinks,
+            photoURL,
+            authStatus,
             username,
-            showMenu,
-            showMenuAuth,
-            screenWidth,
-            handleResizeWidth
+            isFixed,
+
+            onLogout: () => {
+                logout()
+                router.push({ name: 'recipes-home' })
+            }
         }
-    },
-    beforeUnmount(){
-        window.removeEventListener('resize', handleResizeWidth())
     }
 }
 </script>
@@ -167,5 +100,4 @@ export default {
 <style lang="scss" scoped>
 @use '@/sass/layout/header';
 @use '@/sass/components/button';
-@use '@/sass/components/icons';
 </style>

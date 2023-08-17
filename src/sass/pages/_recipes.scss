@@ -1,78 +1,69 @@
-@use '../abstracts/variables';
 @use '../abstracts/mixins';
+@use '../abstracts/variables';
 
-.recipes-hero{
-    height: 60vh;
+.hero {
+  height: 70vh;
+  display: grid;
+  grid-template-columns: 2fr 1.5fr;
+  grid-template-rows: 100%;
+
+  &__content{
     display: grid;
-    grid-template-areas: "hero";
-    position: relative;
+    place-content: center;
+    grid-template-columns: 100%;
+    padding: 4rem;
+  }
 
-    &::before{
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background-color: rgb(variables.$color-grey-950, .48);
-        z-index: 1;
-    }
+  &__background{
+    background: url(@/assets/backgrounds/blob-haikei.svg);
+    background-size: cover;
+    background-position: center right;
+  }
 
-    & > * {
-        grid-area: hero;
-    }
-
-    &__background{
-        width: 100%;
-        height: 60vh;
-        object-fit: cover;
-    }
-
-    &__content{
-        width: min(80rem, 100%);
-        margin-inline: auto;
-        padding-inline: 2rem;
-        display: grid;
-        align-content: center;
-        z-index: 1;
-        gap: 2rem;
-    }   
+  &__meal{
+    width: 50rem;
+    height: 50rem;
+  }
 }
 
-.recipe-categories{
-    max-width: 150rem;
-    margin: 3rem auto;
-    padding: 1.5rem;
-    display: grid;
+.recipe-header{
+  height: 5rem;
+  background-color: variables.$color-white;
+  position: sticky;
+  top: 8rem;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  padding: 3rem 4rem;
+  z-index: 2;
 
-    &__cards{
-        display: grid;
-        grid-template-columns: repeat(
-            auto-fill,
-            minmax(min(25rem, 100%), 1fr)
-        );
-        gap: 1.5rem;
-    }
+  &__navbar{
+    display: flex;
+    gap: 5rem;
+  }
+}
 
-    @include mixins.respond(big-desktop){
-        padding: 0;
-    }
+.recipes-main{
+  padding: 6rem 4rem;
 }
 
 .recipes-layout{
-    max-width: 150rem;
-    margin: 3rem auto;
-    columns: 1;
-    gap: 1rem;
+  columns: 3;
+  column-gap: 2rem;
 
-    & > * {
-        margin-block-end: 2rem;
-    }
+  & > *{
+    margin-bottom: 2rem;
+  }
+}
 
-    @include mixins.respond(tablet){
-        columns: 2;
-        column-gap: 2rem;
-    }
+.search-box{
+  position: relative;
 
-    @include mixins.respond(big-desktop){
-        columns: 4;
-    }
+  &__results{
+    width: 100%;
+    top: 100%;
+    content: '';
+    position: absolute;
+    z-index: 3;
+  }
 }

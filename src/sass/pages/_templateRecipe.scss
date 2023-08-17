@@ -2,7 +2,7 @@
 
 .template-recipe{
     max-width: 120rem;
-    margin: 8rem auto;
+    margin: 10rem auto;
     padding: 1.5rem;
     display: grid;
     gap: 6rem;
@@ -20,7 +20,14 @@
         }
     }
 
-    &__coverRecipe{ border-radius: 3px; }
+    &__coverRecipe{ 
+        width: 50rem;
+        height: 35rem;
+        object-fit: cover;
+        object-position: center;
+        margin-inline: auto;
+        border-radius: 3px; 
+    }
     
     &__information{
         background-color: #d3f9d8;
@@ -31,10 +38,5 @@
         justify-content: space-between;
         
         gap: 2rem;
-
-    }
-
-    &__steps{
-        
     }
 }

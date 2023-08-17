@@ -6,31 +6,37 @@
             alt="Food" 
             class="auth-layout__photo">
         <div class="auth-layout__forms">        
-            <RouterView/>
+          <router-view v-slot="{ Component }">
+            <keep-alive>
+              <component :is="Component" />
+            </keep-alive>
+          </router-view>
         </div>
     </section>
 </template>
 
 <script>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
 export default {
-    data(){
-        return{
-            screenWidth: null
-        }
-    },
-    methods: {
-        handleResizeWidth(){
-            this.screenWidth = window.innerWidth
-        }
-    },
-    mounted(){
-        this.screenWidth = window.innerWidth
-        window.addEventListener('resize', this.handleResizeWidth)
-    },
-    beforeUnmount(){
-        window.removeEventListener('resize', this.handleResizeWidth)
-    }
+  setup() {
+    const screenWidth = ref(null);
+    
+    const handleResizeWidth = () => {
+      screenWidth.value = window.innerWidth;
+    };
+    
+    onMounted(() => {
+      screenWidth.value = window.innerWidth;
+      window.addEventListener('resize', handleResizeWidth);
+    });
+    
+    onBeforeUnmount(() => {
+      window.removeEventListener('resize', handleResizeWidth);
+    });
+    
+    return { screenWidth };
+  }
 }
 </script>
 

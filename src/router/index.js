@@ -27,11 +27,12 @@ const routes = [
     path: '/receta/:id',
     name: 'recipe-by-id',
     meta: {
-        title: 'Receta'       
+        title: 'Receta por ID'       
     },
     props: (route) => {
-        const id = Number(route.params.id)
-        return isNaN(id) ? { id: 61 } : { id }
+        return {
+          id: route.params.id
+        }
     },        
     component: () => import(/* webpackChunkName: "templateRecipe" */ '@/modules/recipes/components/templateRecipe'),
   },

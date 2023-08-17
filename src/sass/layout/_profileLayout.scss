@@ -3,38 +3,38 @@
 
 .profile{
     max-width: 120rem;
-    margin-inline: auto;
-    padding: 5rem 2rem;
-    border-radius: 5px;
-    background-color: variables.$color-white;
-    box-shadow: 0 0 1px variables.$color-grey-400;
+    margin: 8rem auto;
+    padding: 2rem;
 
-    @include mixins.respond(big-desktop){
-        margin: 5rem auto;
-    }
-
-    &__information{
-        display: grid;
-        justify-content: center;
-        justify-items: center;
-        margin-bottom: 4rem;
-
-        &-picture{
-            width: 18rem;
-            height: 18rem;
-            border-radius: 100%;
-            object-fit: cover;
-            object-position: center;
-        }
-    }
-    
     &__navbar{
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-around;
-        padding-bottom: 1rem;
-        gap: 2rem;
-        border-bottom: 1px solid variables.$color-grey-600;    
-        border-radius: 3px;
+      // position: sticky;
+      // top: 8rem;
+      // z-index: 2;
+      background-color: variables.$color-white;
+      display: grid;
+      place-items: center;
+      grid-auto-flow: column;
+      height: 6rem;
+      border-radius: 1rem;
+
+      & > a.router-link-exact-active{
+        position: relative;
+
+        &::before{
+          content: '';
+          position: absolute;
+          bottom: -100%;
+          width: 100%;
+          height: 3px;
+          background-color: variables.$color-primary;  
+          border-radius: 3px;
+        }
+      }
+    }
+
+    &__main{
+      margin-top: 4rem;
+      background-color: variables.$color-white;
+      border-radius: 1rem;
     }
 }

@@ -1,6 +1,7 @@
 @use '../abstracts/variables';
 
 .card-recipe{
+    cursor: pointer;
     width: 100%;
     display: grid;
     grid-template-areas: "card-recipe";

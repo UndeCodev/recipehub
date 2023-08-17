@@ -2,10 +2,10 @@
   <h1 
     v-if="!recipesByAuthor"
     class="heading-primary text-primary d-grid align-content-center text-center"
-    style="height: 20rem;"
+    style="min-height: 20rem;"
   >
-    Aún no tienes recetas publicadas...
-    <span class="heading-tertiary text-normal">Ve a la sección "publicar nueva receta" y comparte tus conocimientos con la comunidad.</span>
+    Aún no tienes recetas publicadas
+    <span class="heading-tertiary text-normal mt-sm">Ve a la sección "publicar nueva receta" y comparte tus conocimientos con la comunidad.</span>
   </h1>
   
   <section 
@@ -27,15 +27,15 @@
     />
   </section>  
 
-  <Transition v-if="showNotification">
-    <ToastNotification 
-      :notification="notification"
-    />
-  </Transition>
+  <!-- <Transition v-if="showNotification"> -->
+    <!-- <ToastNotification  -->
+      <!-- :notification="notification" -->
+    <!-- /> -->
+  <!-- </Transition> -->
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent, onMounted } from 'vue'
 import useRecipes from '@/modules/recipes/composables/useRecipes';
 import useNotification from '@/modules/shared/composables/useNotification';
 
@@ -45,29 +45,24 @@ export default {
     ToastNotification: defineAsyncComponent(() => import(/* ToastNotification */ '@/modules/shared/components/ToastNotification'))
   },
   setup() {
-    // Composables
-    const { 
-      showNotification, 
-      notification, 
-      toastNotification 
-    } = useNotification()
-    
+    // Composables  
     const { 
       getRecipesByAuthor,
       recipesByAuthor
     } = useRecipes()
 
     // Methods
-    const onMounted = async() => {
-      const { ok, message } = await getRecipesByAuthor()
-      if(!ok) toastNotification('error', 'Error al cargar las recetas.', message)
-    }
 
-    onMounted()
+    // Reactive states
+
+    // Lifecycle hooks
+    onMounted(async() => {
+      await getRecipesByAuthor()
+
+      if(!recipesByAuthor.value.length) recipesByAuthor.value = null
+    })
 
     return {
-      showNotification,
-      notification,
       recipesByAuthor
     }
   },
